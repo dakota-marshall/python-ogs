@@ -9,17 +9,19 @@ class OGSClient:
         self.username = username
         self.password = password
         self.access_token = None
+        self. refresh_token = None
 
     def authenticate(self):
         url = 'https://online-go.com/oauth2/access_token/'
         response = requests.post(url, data={
             'client_id': self.client_id,
-            'client_secret': self.client_secret,
+#            'client_secret': self.client_secret,
             'grant_type': 'password',
             'username': self.username,
             'password': self.password
-        })
+        }, headers={'Content-Type': 'application/x-www-form-urlencoded'})
         self.access_token = response.json()['access_token']
+        self.refresh_token = response.json()['refresh_token']
 
     def send_challenge(self, player_username):
         game_settings = {
