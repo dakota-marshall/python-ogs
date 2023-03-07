@@ -31,7 +31,7 @@ class OGSClient:
         self.refresh_token = response.json()['refresh_token']
         self.user_id = self.user_vitals()['id']
 
-    def get_rest_endpoint(self, endpoint: str, params: Dict = None):
+    def get_rest_endpoint(self, endpoint: str, params: dict = None):
         url = f'{self.base_url}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}'
@@ -39,13 +39,13 @@ class OGSClient:
         response = requests.get(url, headers=headers, params=params)
         return response.json()
 
-    def post_rest_endpoint(self, endpoint, payload):
+    def post_rest_endpoint(self, endpoint: str, payload: dict, params: dict = None):
         url = f'{self.base_url}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}',
             'Content-Type': 'application/json'
         }
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(url, headers=headers, json=payload, params=params)
         return response.json()
 
     def user_vitals(self):
