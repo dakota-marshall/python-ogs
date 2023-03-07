@@ -13,6 +13,7 @@ class OGSClient:
         self.refresh_token = None
         self.user_id = None
         self.base_url = "https://online-go.com"
+        self.api_ver = "v1"
 
         # Attempt authentication once everything is defined
         self.authenticate()
@@ -32,33 +33,33 @@ class OGSClient:
         self.user_id = self.user_vitals()['id']
 
     def get_rest_endpoint(self, endpoint: str, params: dict = None):
-        url = f'{self.base_url}{endpoint}'
+        url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}'
         }
-        response = requests.get(url, headers=headers, params=params)
+            response = requests.get(url, headers=headers, params=params)
         return response.json()
 
     def post_rest_endpoint(self, endpoint: str, payload: dict, params: dict = None):
-        url = f'{self.base_url}{endpoint}'
+        url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}',
             'Content-Type': 'application/json'
         }
-        response = requests.post(url, headers=headers, json=payload, params=params)
+            response = requests.post(url, headers=headers, json=payload, params=params)
         return response.json()
 
     def user_vitals(self):
-        endpoint = '/api/v1/me'
+        endpoint = '/me'
         return self.get_rest_endpoint(endpoint)
 
     def get_player(self, player_username):
         encoded_name = urllib.parse.quote(player_username)
-        endpoint = f'/api/v1/players/?username={encoded_name}'
-        return self.get_rest_endpoint(endpoint)['results'][0]
+        endpoint = f'/players/'
+        return self.get_rest_endpoint(endpoint=endpoint, params={'username' : encoded_name})['results'][0]
 
     def received_challenges(self):
-        endpoint = '/api/v1/me/challenges'
+        endpoint = '/me/challenges'
         received_challenges = []
         all_challenges = self.get_rest_endpoint(endpoint)['results']
         for challenge in all_challenges:
@@ -67,7 +68,7 @@ class OGSClient:
         return received_challenges
 
     def sent_challenges(self):
-        endpoint = '/api/v1/me/challenges'
+        endpoint = '/me/challenges'
         sent_challenges = []
         all_challenges = self.get_rest_endpoint(endpoint)['results']
         for challenge in all_challenges:
@@ -76,7 +77,7 @@ class OGSClient:
         return sent_challenges
 
     def accept_challenge(self, challenge_id):
-        endpoint = f'/api/v1/me/challenges/{challenge_id}/accept'
+        endpoint = f'/me/challenges/{challenge_id}/accept'
         return self.get_rest_endpoint(endpoint)
 
 # TODO: Need to make these customizable 
@@ -120,18 +121,18 @@ class OGSClient:
         }
         player_id = self.get_player(player_username)['id']
         print(f"Challenging player: {player_username} - {player_id}")
-        endpoint = f'/api/v1/players/{player_id}/challenge/'
+        endpoint = f'/players/{player_id}/challenge/'
         response = self.post_rest_endpoint(endpoint, game_settings)
         challenge_id = response['challenge']
         game_id = response['game']
         return challenge_id, game_id
         
     def user_games(self):
-        endpoint = '/api/v1/me/games'
+        endpoint = '/me/games'
         return self.get_rest_endpoint(endpoint)
 
     def game_details(self, game_id):
-        endpoint = f'/api/v1/games/{game_id}'
+        endpoint = f'/games/{game_id}'
         return self.get_rest_endpoint(endpoint)
 
 
