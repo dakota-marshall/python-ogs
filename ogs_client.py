@@ -31,12 +31,12 @@ class OGSClient:
         self.refresh_token = response.json()['refresh_token']
         self.user_id = self.user_vitals()['id']
 
-    def get_rest_endpoint(self, endpoint):
+    def get_rest_endpoint(self, endpoint: str, params: Dict = None):
         url = f'{self.base_url}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}'
         }
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, params=params)
         return response.json()
 
     def post_rest_endpoint(self, endpoint, payload):
