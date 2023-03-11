@@ -3,7 +3,7 @@ import requests
 import time
 from time import sleep
 
-token = "JbMTMzuS9IwI10goO5oc2Fc65FpzB1"
+token = ""
 
 sio = socketio.Client(logger=True, engineio_logger=False)
 
