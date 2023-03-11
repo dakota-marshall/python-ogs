@@ -247,6 +247,7 @@ class OGSClient:
         return self.get_rest_endpoint(endpoint)
 
 class OGSGame:
+    # Class for handling each OGSGame connected via the OGSSocket
     def __init__(self, game_socket, game_id, auth_data, user_data):
         self.socket = game_socket
         self.game_id = game_id
@@ -296,10 +297,12 @@ class OGSGame:
 
 class OGSSocket:
     def __init__(self, bearer_token: str):
+        # Clock Settings
         self.clock_drift = 0.0
         self.clock_latency = 0.0
         self.last_ping = 0
         self.last_issued_ping = 0
+
         self.connected_games = {}
         self.bearer_token = bearer_token
         self.socket = socketio.Client(logger=True, engineio_logger=False)
@@ -308,6 +311,7 @@ class OGSSocket:
         except requests.exceptions.RequestException as e:
             raise OGSApiException("Failed to get auth_data") from e
         
+        # Grab user data as its own variable for ease of use
         self.user_data = self.auth_data['user']
 
     def __del__(self):
@@ -321,6 +325,7 @@ class OGSSocket:
         except:
             raise OGSApiException("Failed to connect to OGS Websocket")
 
+    # Listens to events received from the socket via the decorators, and calls the appropriate function
     def call_backs(self):
 
         @self.socket.on('connect')
@@ -359,7 +364,7 @@ class OGSSocket:
         def catch_all(event, data):
             print(f"Got Event: {event} \n {data}")
 
-    
+    # Get info on connected server
     def host_info(self):
         self.socket.emit(event="hostinfo", namespace='/')
         print("Emit hostinfo")
