@@ -2,6 +2,7 @@ import requests
 import urllib.parse
 import socketio
 import json
+from time import sleep, time
 
 class OGSApiException(Exception):
     pass
@@ -109,7 +110,7 @@ class OGSClient:
         else:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
-# User Specific Resources: /me
+    # User Specific Resources: /me
 
     def user_vitals(self):
         endpoint = '/me'
@@ -151,7 +152,7 @@ class OGSClient:
         }
         return self.delete_rest_endpoint(endpoint=endpoint, payload=payload)
 
-# Players: /players
+    # Players: /players
 
     def get_player(self, player_username):
         encoded_name = urllib.parse.quote(player_username)
@@ -205,7 +206,7 @@ class OGSClient:
         game_id = response['game']
         return challenge_id, game_id
 
-# Challenges
+    # Challenges
 
     # TODO: Change these to use the 'challenger' parameter instead of looping through all challenges
     def received_challenges(self):
@@ -244,3 +245,89 @@ class OGSClient:
     def game_details(self, game_id):
         endpoint = f'/games/{game_id}'
         return self.get_rest_endpoint(endpoint)
+
+class OGSSocket:
+    def __init__(self, bearer_token: str):
+        self.clock_drift = 0.0
+        self.clock_latency = 0.0
+        self.last_ping = 0
+        self.last_issued_ping = 0
+        self.bearer_token = bearer_token
+        self.socket = socketio.Client(logger=True, engineio_logger=False)
+        try:
+            self.auth_data = requests.get('https://online-go.com/api/v1/ui/config', headers={'Authorization': f'Bearer {bearer_token}'}).json()
+        except requests.exceptions.RequestException as e:
+            raise OGSApiException("Failed to get auth_data") from e
+        
+        self.user_data = self.auth_data['user']
+
+    def __del__(self):
+        self.disconnect()
+
+    def connect(self):
+        self.call_backs()
+        print("Connecting to Websocket")
+        try:
+            self.socket.connect('https://online-go.com/socket.io/?EIO=4', transports='websocket', headers={"Authorization" : f"Bearer {self.bearer_token}"})
+        except:
+            raise OGSApiException("Failed to connect to OGS Websocket")
+
+    def call_backs(self):
+
+        @self.socket.on('connect')
+        def authenticate():
+            print("Connected to socket, authenticating")
+            self.socket.emit(event="authenticate", data={"auth": self.auth_data['chat_auth'], "player_id": 1010740, "username": "diobolic", "jwt": self.auth_data['user_jwt']})
+            sleep(1)
+        
+        @self.socket.on('hostinfo')
+        def recv_hostinfo(data):
+            print(f"Got: {data}")
+        
+        @self.socket.on('net/pong')
+        def on_pong(data):
+            now = time() * 1000
+            latency = now - data["client"]
+            drift = ((now - latency / 2) - data["server"])
+            self.clock_latency = latency / 1000
+            self.clock_drift = drift / 1000
+            self.last_ping = now / 1000
+            print(f"Got pong: {data}")
+        
+        @self.socket.on('active_game')
+        def on_active_game(data):
+            print(f"Got active game: {data}")
+
+        @self.socket.on('game/*')
+        def on_game(data):
+            print(f"Got game data: {data}")
+
+        @self.socket.on('notification')
+        def on_notification(data):
+            print(f"Got notification: {data}")
+
+        @self.socket.on('*')
+        def catch_all(event, data):
+            print(f"Got Event: {event} \n {data}")
+
+    
+    def host_info(self):
+        self.socket.emit(event="hostinfo", namespace='/')
+        print("Emit hostinfo")
+    
+    def ping(self):
+        self.socket.emit(event="net/ping", data={"client": int(time() * 1000), "drift": self.clock_drift, "latency": self.clock_latency})
+    
+    def notification_connect(self):
+        self.socket.emit(event="notification/connect", data={"auth": self.auth_data['notification_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
+    
+    def chat_connect(self):
+        self.socket.emit(event="chat/connect", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
+
+    # TODO: this will probably need to be an object? Figure out some way to manage the state here
+    def game_connect(self, game_id: int):
+        self.socket.emit(event="game/connect", data={'game_id': game_id, 'player_id': self.user_data['id'], 'chat': False})
+
+    def disconnect(self):
+        self.socket.disconnect()
+        print("Disconnected from WebSocket")
