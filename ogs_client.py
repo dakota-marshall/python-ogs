@@ -246,12 +246,61 @@ class OGSClient:
         endpoint = f'/games/{game_id}'
         return self.get_rest_endpoint(endpoint)
 
+class OGSGame:
+    def __init__(self, game_socket, game_id, auth_data, user_data):
+        self.socket = game_socket
+        self.game_id = game_id
+        self.user_data = user_data
+        self.auth_data = auth_data
+        self.game_call_backs()
+        self.connect()
+    
+    def __del__(self):
+        self.disconnect()
+
+    def game_call_backs(self):
+
+        @self.socket.on(f'game/{self.game_id}/move')
+        def on_game_move(data):
+            print(f"Got move: {data}")
+
+        @self.socket.on(f'game/{self.game_id}/gamedata')
+        def on_game_latency(data):
+            print(f'Got Gamedata: {data}')
+
+        @self.socket.on(f'game/{self.game_id}/clock')
+        def on_game_latency(data):
+            print(f'Got Clock: {data}')
+
+        @self.socket.on(f'game/{self.game_id}/latency')
+        def on_game_latency(data):
+            print(f'Got Latency: {data}')
+
+    def connect(self):
+        print(f"Connecting to game {self.game_id}")
+        self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.user_data['id'], 'chat': False})
+
+    def disconnect(self):
+        print(f"Disconnecting game {self.game_id}")
+        self.socket.emit(event="game/disconnect", data={'game_id': self.game_id})
+
+    def move(self, move):
+        print(f"Submitting move {move} to game {self.game_id}")
+        self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': move})
+
+    def resign(self):
+        print(f"Resigning game {self.game_id}")
+        self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})
+
+    
+
 class OGSSocket:
     def __init__(self, bearer_token: str):
         self.clock_drift = 0.0
         self.clock_latency = 0.0
         self.last_ping = 0
         self.last_issued_ping = 0
+        self.connected_games = {}
         self.bearer_token = bearer_token
         self.socket = socketio.Client(logger=True, engineio_logger=False)
         try:
@@ -281,7 +330,7 @@ class OGSSocket:
             sleep(1)
         
         @self.socket.on('hostinfo')
-        def recv_hostinfo(data):
+        def on_hostinfo(data):
             print(f"Got: {data}")
         
         @self.socket.on('net/pong')
@@ -324,9 +373,11 @@ class OGSSocket:
     def chat_connect(self):
         self.socket.emit(event="chat/connect", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
 
-    # TODO: this will probably need to be an object? Figure out some way to manage the state here
     def game_connect(self, game_id: int):
-        self.socket.emit(event="game/connect", data={'game_id': game_id, 'player_id': self.user_data['id'], 'chat': False})
+        self.connected_games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
+
+    def game_disconnect(self, game_id: int):
+        del self.connected_games[game_id]
 
     def disconnect(self):
         self.socket.disconnect()
