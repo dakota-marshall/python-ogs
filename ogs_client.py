@@ -302,8 +302,8 @@ class OGSSocket:
         self.clock_latency = 0.0
         self.last_ping = 0
         self.last_issued_ping = 0
-
-        self.connected_games = {}
+        # Dict of connected game objects
+        self.games = {}
         self.bearer_token = bearer_token
         self.socket = socketio.Client(logger=True, engineio_logger=False)
         try:
@@ -379,10 +379,10 @@ class OGSSocket:
         self.socket.emit(event="chat/connect", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
 
     def game_connect(self, game_id: int):
-        self.connected_games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
+        self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
 
     def game_disconnect(self, game_id: int):
-        del self.connected_games[game_id]
+        del self.games[game_id]
 
     def disconnect(self):
         self.socket.disconnect()
