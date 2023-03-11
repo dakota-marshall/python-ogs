@@ -265,11 +265,11 @@ class OGSGame:
             print(f"Got move: {data}")
 
         @self.socket.on(f'game/{self.game_id}/gamedata')
-        def on_game_latency(data):
+        def on_game_data(data):
             print(f'Got Gamedata: {data}')
 
         @self.socket.on(f'game/{self.game_id}/clock')
-        def on_game_latency(data):
+        def on_game_clock(data):
             print(f'Got Clock: {data}')
 
         @self.socket.on(f'game/{self.game_id}/latency')
