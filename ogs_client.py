@@ -232,15 +232,13 @@ class OGSClient:
                 sent_challenges.append(challenge)
         return sent_challenges
     
-    # TODO: Needs Tested
     def accept_challenge(self, challenge_id):
         endpoint = f'/me/challenges/{challenge_id}/accept'
-        return self.get_rest_endpoint(endpoint)
+        return self.post_rest_endpoint(endpoint=endpoint,payload={})
     
-    # TODO: Needs Tested
     def decline_challenge(self, challenge_id):
-        endpoint = f'/me/challenges/{challenge_id}/decline'
-        return self.get_rest_endpoint(endpoint=endpoint)
+        endpoint = f'/me/challenges/{challenge_id}/'
+        return self.delete_rest_endpoint(endpoint=endpoint, payload={})
 
     def challenge_details(self, challenge_id):
         endpoint = f'/me/challenges/{challenge_id}'
