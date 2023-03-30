@@ -23,6 +23,9 @@ class OGSClient:
         # TODO: Maybe implement some form of token caching, so we arent making new tokens every time the script runs
         self.authenticate()
 
+        self.sock = OGSSocket(self.access_token)
+        self.sock.connect()
+
     # TODO: All these internal functions should be moved into private functions
     def authenticate(self):
         endpoint = f'{self.base_url}/oauth2/token/'
