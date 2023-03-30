@@ -312,8 +312,6 @@ class OGSGame:
         print(f"Resigning game {self.game_id}")
         self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})  
 
-    
-
 class OGSSocket:
     def __init__(self, bearer_token: str):
         # Clock Settings
