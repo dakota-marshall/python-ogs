@@ -257,6 +257,8 @@ class OGSGame:
         self.auth_data = auth_data
         self.game_call_backs()
         self.connect()
+        self.game_data = {}
+        self.latency = 0
     
     def __del__(self):
         self.disconnect()
@@ -270,8 +272,8 @@ class OGSGame:
 
         @self.socket.on(f'game/{self.game_id}/gamedata')
         def on_game_data(data):
-            #TODO: Store received Game Data
             print(f'Got Gamedata: {data}')
+            self.game_data = data
 
         @self.socket.on(f'game/{self.game_id}/clock')
         def on_game_clock(data):
@@ -280,8 +282,8 @@ class OGSGame:
 
         @self.socket.on(f'game/{self.game_id}/latency')
         def on_game_latency(data):
-            #TODO: Use this to modify a game latency variable
             print(f'Got Latency: {data}')
+            self.latency = data['latency']
 
         @self.socket.on(f'game/{self.game_id}/undo_requested')
         def on_undo_requested(data):
