@@ -1,0 +1,165 @@
+{
+  "white_player_id": 358577, 
+  "black_player_id": 1010740, 
+  "group_ids": [
+    12328,
+    38,
+    4391
+  ], 
+  "game_id": 52341685, 
+  "game_name": "🌱", 
+  "private": False, 
+  "pause_on_weekends": False, 
+  "players": {
+    "black": {
+      "username": "Bone-A Lisa", 
+      "rank": 14.489060237742425, 
+      "professional": False, 
+      "id": 1010740
+    }, 
+    "white": {
+      "username": "GGERKK", 
+      "rank": 22.490422703413156, 
+      "professional": False, 
+      "id": 358577
+    }
+  }, 
+  "ranked": True, 
+  "disable_analysis": False, 
+  "handicap": 8, 
+  "komi": 0.5, 
+  "width": 19, 
+  "height": 19, 
+  "rules": "aga", 
+  "rengo": False, 
+  "rengo_teams": {
+    "black": [], 
+    "white": []
+  }, 
+  "rengo_casual_mode": False, 
+  "time_control": {
+    "system": "none", 
+    "time_control": "none", 
+    "speed": "correspondence", 
+    "pause_on_weekends": False
+  }, 
+  "meta_groups": [
+    38,
+    4391,
+    12328,
+    6379,
+    28,
+    6269,
+    446
+  ], 
+  "phase": "play", 
+  "initial_player": "white", 
+  "moves": [
+    [
+      16,
+      5,
+      4368616
+    ],
+    [
+      13,
+      2,
+      1730466
+    ],
+    [
+      16,
+      3,
+      1066853
+    ],
+    [
+      16,
+      2,
+      655764
+    ],
+    [
+      17,
+      2,
+      79530
+    ],
+    [
+      15,
+      1,
+      981597
+    ],
+    [
+      17,
+      4,
+      834453
+    ],
+    [
+      9,
+      9,
+      1979209
+    ],
+    [
+      16,
+      13,
+      344563
+    ],
+    [
+      16,
+      14,
+      102388
+    ],
+    [
+      15,
+      13,
+      1146466
+    ]
+  ], 
+  "allow_self_capture": False, 
+  "automatic_stone_removal": False, 
+  "free_handicap_placement": False, 
+  "aga_handicap_scoring": True, 
+  "allow_ko": False, 
+  "allow_superko": False, 
+  "superko_algorithm": "ssk", 
+  "player_pool": {
+    "358577": {
+      "username": "GGERKK", 
+      "rank": 22.490422703413156, 
+      "professional": False, 
+      "id": 358577
+    }, 
+    "1010740": {
+      "username": "Bone-A Lisa", 
+      "rank": 14.489060237742425, 
+      "professional": False, 
+      "id": 1010740
+    }
+  }, 
+  "score_territory": True, 
+  "score_territory_in_seki": True, 
+  "score_stones": True, 
+  "score_handicap": True, 
+  "score_prisoners": False, 
+  "score_passes": True, 
+  "white_must_pass_last": True, 
+  "opponent_plays_first_after_resume": False, 
+  "strict_seki_mode": False, 
+  "initial_state": {
+    "black": "jdjpdjpjddpppddp", 
+    "white": ""
+  }, 
+  "start_time": 1680110301, 
+  "original_disable_analysis": False, 
+  "state_version": 23, 
+  "malkovich_present": False, 
+  "latencies": {
+    "358577": 44, 
+    "1010740": 44
+  }, 
+  "clock": {
+    "game_id": 52341685, 
+    "current_player": 1010740, 
+    "black_player_id": 1010740, 
+    "white_player_id": 358577, 
+    "title": "🌱", 
+    "last_move": 1680123590905, 
+    "expiration": 1685307590905
+  }
+}
