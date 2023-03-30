@@ -310,7 +310,7 @@ class OGSGame:
     #TODO: Needs Testing
     def resign(self):
         print(f"Resigning game {self.game_id}")
-        self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})
+        self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})  
 
     
 
@@ -350,7 +350,7 @@ class OGSSocket:
         @self.socket.on('connect')
         def authenticate():
             print("Connected to socket, authenticating")
-            self.socket.emit(event="authenticate", data={"auth": self.auth_data['chat_auth'], "player_id": 1010740, "username": "diobolic", "jwt": self.auth_data['user_jwt']})
+            self.socket.emit(event="authenticate", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username'], "jwt": self.auth_data['user_jwt']})
             sleep(1)
         
         @self.socket.on('hostinfo')
