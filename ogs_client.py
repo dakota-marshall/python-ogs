@@ -238,7 +238,7 @@ class OGSClient:
         endpoint = f'/me/challenges/{challenge_id}/decline'
         return self.get_rest_endpoint(endpoint=endpoint)
 
-    def challenge_details(self, challenge_id: int):
+    def challenge_details(self, challenge_id):
         endpoint = f'/me/challenges/{challenge_id}'
         return self.get_rest_endpoint(endpoint=endpoint)
 
