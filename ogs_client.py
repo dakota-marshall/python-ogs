@@ -123,6 +123,7 @@ class OGSClient:
         endpoint = '/me/settings/'
         return self.get_rest_endpoint(endpoint=endpoint)
     
+    #TODO: Allow for a good way to update settings appropriately.
     def update_user_settings(self, payload: dict = None):
         endpoint = '/me/settings/'
         payload = {
@@ -266,18 +267,22 @@ class OGSGame:
 
         @self.socket.on(f'game/{self.game_id}/move')
         def on_game_move(data):
+            #TODO: Handle Moves
             print(f"Got move: {data}")
 
         @self.socket.on(f'game/{self.game_id}/gamedata')
         def on_game_data(data):
+            #TODO: Store received Game Data
             print(f'Got Gamedata: {data}')
 
         @self.socket.on(f'game/{self.game_id}/clock')
         def on_game_clock(data):
+            #TODO: Need to create a game clock and sync clock with this event
             print(f'Got Clock: {data}')
 
         @self.socket.on(f'game/{self.game_id}/latency')
         def on_game_latency(data):
+            #TODO: Use this to modify a game latency variable
             print(f'Got Latency: {data}')
 
     def connect(self):
@@ -292,6 +297,7 @@ class OGSGame:
         print(f"Submitting move {move} to game {self.game_id}")
         self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': move})
 
+    #TODO: Needs Testing
     def resign(self):
         print(f"Resigning game {self.game_id}")
         self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})
