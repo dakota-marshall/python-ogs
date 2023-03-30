@@ -285,6 +285,16 @@ class OGSGame:
             #TODO: Use this to modify a game latency variable
             print(f'Got Latency: {data}')
 
+        @self.socket.on(f'game/{self.game_id}/undo_requested')
+        def on_undo_requested(data):
+            #TODO: Handle This 
+            print(f'Got Undo Request: {data}')
+        
+        @self.socket.on(f'game/{self.game_id}/undo_accepted')
+        def on_undo_accepted(data):
+            #TODO: Handle This
+            print(f'Got Accepted Undo: {data}')
+
     def connect(self):
         print(f"Connecting to game {self.game_id}")
         self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.user_data['id'], 'chat': False})
