@@ -4,6 +4,8 @@ import socketio
 import json
 from time import sleep, time
 
+# TODO: This will eventually need to be moved to `termination-api` instead of `/api/v1/`
+
 class OGSApiException(Exception):
     pass
 
