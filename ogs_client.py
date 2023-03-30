@@ -147,14 +147,14 @@ class OGSClient:
         }
         return self.post_rest_endpoint(endpoint=endpoint, payload=payload)
 
-    # TODO: This method doesnt work, DELETE is not allowed on this endpoint
     def remove_friend(self, username: str):
         endpoint = '/me/friends/'
         player_id = self.get_player(username)['id']
         payload = {
+            "delete": True,
             "player_id" : player_id
         }
-        return self.delete_rest_endpoint(endpoint=endpoint, payload=payload)
+        return self.post_rest_endpoint(endpoint=endpoint, payload=payload)
 
     # Players: /players
 
