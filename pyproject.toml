@@ -1,19 +1,24 @@
 [build-system]
 requires = [
-    "setuptools>=42",
-    "wheel"
+  "setuptools>=42",
+  "wheel",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogsapi"
-version = "0.1.2"
+version = "0.1.4"
 authors = [
   { name="Dakota Marshall", email="me@dakotamarshall.net" },
 ]
 description = "An API Wrapper for online-go.com, an online Go / Baduk server"
 readme = "README.md"
 requires-python = ">=3.7"
+dependencies = [
+  "python-engineio==3.13.2",
+  "python-socketio==4.6.0",
+  "requests"
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
