@@ -8,4 +8,4 @@ package:
         - python -m build
         - python3 -m twine upload dist/*
     rules:
-        - if: '$CI_COMMIT_BRANCH == prod'
+        - if: '$CI_COMMIT_BRANCH == "prod"'
