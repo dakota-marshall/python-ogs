@@ -324,7 +324,8 @@ class OGSSocket:
         # Dict of connected game objects
         self.games = {}
         self.bearer_token = bearer_token
-        self.socket = socketio.Client(logger=True, engineio_logger=False)
+        # TODO: Allow user to enable logger functions when creating the object
+        self.socket = socketio.Client(logger=False, engineio_logger=False)
         try:
             self.auth_data = requests.get('https://online-go.com/api/v1/ui/config', headers={'Authorization': f'Bearer {bearer_token}'}).json()
         except requests.exceptions.RequestException as e:
