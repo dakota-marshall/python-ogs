@@ -8,6 +8,13 @@ An API wrapper written in python for the Online-Go Server's (OGS) REST API and R
 
 ## Install
 
+### Pip Package
+
+```bash
+python3 -m pip install ogsapi
+```
+
+### Manual
 Installing the specific versions in `requirements.txt` is **REQUIRED**, the OGS API does not support newer versions, and these versions of socketio and engineio are tested to be compatible with each other.
 
 ```bash
@@ -23,7 +30,7 @@ pip3 install -r requirements.txt
 ## Usage
 
 ```python
-from ogs_client import OGSClient, OGSSocket
+from ogsapi.api import OGSClient
 
 ogs = OGSClient('your_client_id', 'your_client_secret', 'your_username', 'your_password')
 ```
