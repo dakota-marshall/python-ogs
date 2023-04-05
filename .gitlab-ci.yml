@@ -1,0 +1,11 @@
+stages:
+    - package
+package:
+    stage: package
+    image: python:3
+    script:
+        - pip3 install --upgrade build twine
+        - python -m build
+        - python3 -m twine upload dist/*
+    rules:
+        - if: '$CI_COMMIT_BRANCH == prod'
