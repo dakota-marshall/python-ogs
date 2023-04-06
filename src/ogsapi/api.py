@@ -5,6 +5,7 @@ import json
 from time import sleep, time
 
 # TODO: This will eventually need to be moved to `termination-api` instead of `/api/v1/`
+# TODO: Should probably implement a user class that contains all user info and functions
 
 class OGSApiException(Exception):
     pass
@@ -16,6 +17,7 @@ class OGSClient:
         self.username = username
         self.password = password
         self.access_token = None
+        # TODO:  Implement refresh token
         self.refresh_token = None
         self.user_id = None
         self.base_url = "https://online-go.com"
