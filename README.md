@@ -45,6 +45,14 @@ This will authenticate you to OGS using your API credentials, and connect you to
 
 - Get User vitals: `ogs.user_vitals()`
 - Get User Settings: `ogs.user_settings()`
+- Update User Settings: `ogs.update_user_settings()
+  - username: str
+  - first_name: str
+  - last_name: str
+  - country: str
+  - private_name: bool
+  - website: str
+  - about: str
 - Get User Games: `ogs.user_games()`
 - Get User Friends (Optionally search for user): `ogs.user_friends(username)`
 - Send friend request: `ogs.send_friend_request(username)`

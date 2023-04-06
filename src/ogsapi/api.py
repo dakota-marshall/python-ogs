@@ -125,12 +125,35 @@ class OGSClient:
         endpoint = '/me/settings/'
         return self.get_rest_endpoint(endpoint=endpoint)
     
-    #TODO: Allow for a good way to update settings appropriately.
-    def update_user_settings(self, payload: dict = None):
-        endpoint = '/me/settings/'
-        payload = {
-            'website' : 'https://example.com'
-        }
+    def update_user_settings(
+            self, username: str = None, 
+            first_name: str = None, 
+            last_name: str = None, 
+            private_name: bool = None, 
+            country: str = None, 
+            website: str = None,
+            about: str = None
+        ):
+
+        # This is a bit of a mess, but it works, should be refactored
+        payload = {}
+        if username is not None:
+            payload['username'] = username
+        if first_name is not None:
+            payload['first_name'] = first_name
+        if last_name is not None:
+            payload['last_name'] = last_name
+        if private_name is not None:
+            payload['real_name_is_private'] = private_name
+        if country is not None:
+            payload['country'] = country
+        if website is not None:
+            payload['website'] = website
+        if about is not None:
+            payload['about'] = about
+
+        endpoint = f'/players/{self.user_id}'
+        # Add the inputs to a payload, only if they are not None
         return self.put_rest_endpoint(endpoint=endpoint, payload=payload)
 
     def user_games(self):
