@@ -298,7 +298,7 @@ class OGSGame:
             print(f"Got move: {data}")
 
         @self.socket.on(f'game/{self.game_id}/gamedata')
-        def on_game_data(data):
+        def _on_game_data(data):
             print(f'Got Gamedata: {data}')
             self.game_data = data
 
