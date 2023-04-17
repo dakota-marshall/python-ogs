@@ -282,7 +282,7 @@ class OGSGame:
         self.game_id = game_id
         self.user_data = user_data
         self.auth_data = auth_data
-        self.game_call_backs()
+        self._game_call_backs()
         self.connect()
         self.game_data = {}
         self.latency = 0
@@ -290,10 +290,10 @@ class OGSGame:
     def __del__(self):
         self.disconnect()
 
-    def game_call_backs(self):
+    def _game_call_backs(self):
 
         @self.socket.on(f'game/{self.game_id}/move')
-        def on_game_move(data):
+        def _on_game_move(data):
             #TODO: Handle Moves
             print(f"Got move: {data}")
 
@@ -303,22 +303,22 @@ class OGSGame:
             self.game_data = data
 
         @self.socket.on(f'game/{self.game_id}/clock')
-        def on_game_clock(data):
+        def _on_game_clock(data):
             #TODO: Need to create a game clock and sync clock with this event
             print(f'Got Clock: {data}')
 
         @self.socket.on(f'game/{self.game_id}/latency')
-        def on_game_latency(data):
+        def _on_game_latency(data):
             print(f'Got Latency: {data}')
             self.latency = data['latency']
 
         @self.socket.on(f'game/{self.game_id}/undo_requested')
-        def on_undo_requested(data):
+        def _on_undo_requested(data):
             #TODO: Handle This 
             print(f'Got Undo Request: {data}')
         
         @self.socket.on(f'game/{self.game_id}/undo_accepted')
-        def on_undo_accepted(data):
+        def _on_undo_accepted(data):
             #TODO: Handle This
             print(f'Got Accepted Undo: {data}')
 
