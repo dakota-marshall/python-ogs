@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogsapi"
-version = "0.2.1"
+version = "0.3.0"
 authors = [
   { name="Dakota Marshall", email="me@dakotamarshall.net" },
 ]
@@ -17,6 +17,7 @@ requires-python = ">=3.7"
 dependencies = [
   "python-engineio==3.13.2",
   "python-socketio==4.6.0",
+  "websocket-client",
   "requests"
 ]
 classifiers = [

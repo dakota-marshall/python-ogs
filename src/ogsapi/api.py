@@ -1,10 +1,11 @@
 import requests
 import urllib.parse
 import socketio
-import json
+from typing import Callable
 from time import sleep, time
 
 # TODO: This will eventually need to be moved to `termination-api` instead of `/api/v1/`
+# TODO: Should probably implement a user class that contains all user info and functions
 
 class OGSApiException(Exception):
     pass
@@ -16,6 +17,7 @@ class OGSClient:
         self.username = username
         self.password = password
         self.access_token = None
+        # TODO:  Implement refresh token
         self.refresh_token = None
         self.user_id = None
         self.base_url = "https://online-go.com"
@@ -125,12 +127,35 @@ class OGSClient:
         endpoint = '/me/settings/'
         return self.get_rest_endpoint(endpoint=endpoint)
     
-    #TODO: Allow for a good way to update settings appropriately.
-    def update_user_settings(self, payload: dict = None):
-        endpoint = '/me/settings/'
-        payload = {
-            'website' : 'https://example.com'
-        }
+    def update_user_settings(
+            self, username: str = None, 
+            first_name: str = None, 
+            last_name: str = None, 
+            private_name: bool = None, 
+            country: str = None, 
+            website: str = None,
+            about: str = None
+        ):
+
+        # This is a bit of a mess, but it works, should be refactored
+        payload = {}
+        if username is not None:
+            payload['username'] = username
+        if first_name is not None:
+            payload['first_name'] = first_name
+        if last_name is not None:
+            payload['last_name'] = last_name
+        if private_name is not None:
+            payload['real_name_is_private'] = private_name
+        if country is not None:
+            payload['country'] = country
+        if website is not None:
+            payload['website'] = website
+        if about is not None:
+            payload['about'] = about
+
+        endpoint = f'/players/{self.user_id}'
+        # Add the inputs to a payload, only if they are not None
         return self.put_rest_endpoint(endpoint=endpoint, payload=payload)
 
     def user_games(self):
@@ -252,51 +277,64 @@ class OGSClient:
 
 class OGSGame:
     # Class for handling each OGSGame connected via the OGSSocket
+    # To receive data from the game, use the callback function to register functions to be called when data is received.
+    # on_move and on_clock are required for the game to function properly, on_undo is only for handling undo requests
+    
     def __init__(self, game_socket, game_id, auth_data, user_data):
         self.socket = game_socket
         self.game_id = game_id
         self.user_data = user_data
         self.auth_data = auth_data
-        self.game_call_backs()
+        self._game_call_backs()
         self.connect()
         self.game_data = {}
         self.latency = 0
-    
+        self.callback_func = {
+            'on_move': None,
+            'on_clock': None,
+            'on_undo': None
+        }
+
     def __del__(self):
         self.disconnect()
 
-    def game_call_backs(self):
+    def register_callback(self, event: str, callback: Callable):
+        self.callback_func[event] = callback
+
+    # Low level socket functions
+    def _game_call_backs(self):
 
         @self.socket.on(f'game/{self.game_id}/move')
-        def on_game_move(data):
-            #TODO: Handle Moves
+        def _on_game_move(data):
             print(f"Got move: {data}")
-
+            self.callback_func['on_move'](data)
+            
         @self.socket.on(f'game/{self.game_id}/gamedata')
-        def on_game_data(data):
+        def _on_game_data(data):
             print(f'Got Gamedata: {data}')
             self.game_data = data
 
         @self.socket.on(f'game/{self.game_id}/clock')
-        def on_game_clock(data):
+        def _on_game_clock(data):
             #TODO: Need to create a game clock and sync clock with this event
             print(f'Got Clock: {data}')
 
         @self.socket.on(f'game/{self.game_id}/latency')
-        def on_game_latency(data):
+        def _on_game_latency(data):
             print(f'Got Latency: {data}')
             self.latency = data['latency']
 
         @self.socket.on(f'game/{self.game_id}/undo_requested')
-        def on_undo_requested(data):
+        def _on_undo_requested(data):
             #TODO: Handle This 
             print(f'Got Undo Request: {data}')
         
         @self.socket.on(f'game/{self.game_id}/undo_accepted')
-        def on_undo_accepted(data):
+        def _on_undo_accepted(data):
             #TODO: Handle This
             print(f'Got Accepted Undo: {data}')
-
+    
+    # Send functions
     def connect(self):
         print(f"Connecting to game {self.game_id}")
         self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.user_data['id'], 'chat': False})
@@ -309,10 +347,17 @@ class OGSGame:
         print(f"Submitting move {move} to game {self.game_id}")
         self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': move})
 
-    #TODO: Needs Testing
     def resign(self):
         print(f"Resigning game {self.game_id}")
         self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})  
+    
+    def undo(self):
+        print(f"Requesting undo on game {self.game_id}")
+        self.socket.emit(event="game/undo/request", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})
+    
+    def pass_turn(self):
+        print(f'Submitting move pass to game {self.game_id}')
+        self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': '..'})
 
 class OGSSocket:
     def __init__(self, bearer_token: str):
@@ -400,6 +445,8 @@ class OGSSocket:
 
     def game_connect(self, game_id: int):
         self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
+
+        return self.games[game_id]
 
     def game_disconnect(self, game_id: int):
         del self.games[game_id]
