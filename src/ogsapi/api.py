@@ -1,7 +1,7 @@
 import requests
 import urllib.parse
 import socketio
-import json
+from typing import Callable
 from time import sleep, time
 
 # TODO: This will eventually need to be moved to `termination-api` instead of `/api/v1/`
