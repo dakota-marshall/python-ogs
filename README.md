@@ -72,15 +72,30 @@ This will authenticate you to OGS using your API credentials, and connect you to
 - Connect To Notification Stream: `ogs.sock.notification_connect()`
 - Connect to Chat: `ogs.sock.chat_connect()`
 - Connect to a Game: `ogs.sock.game_connect(gameid: int)`
-  - This creates an object in the `ogs.sock.games` list with the key `game_id`
+  - This returns an object containing all the functions to handle received events from that game
+  - To be able to run code when a move is received, you need to register a callback function you made with: 
+  - `ogs.sock.games[game_id].register_callback(callback)`
 - Disconnect from a Game: `ogs.sock.game_disconnect(game_id)`
 
 ### Implemented Game Functions
 
 - Make a move: `ogs.sock.games[game_id].move('jj')`
+- Pass turn: `ogs.sock.games[game_id].pass_turn()`
+- Request an undo: `ogs.sock.games[game_id].undo()`
+- Resign: `ogs.sock.games[game_id].resign()`
+
+### Implemented Received Events
+
+- Getting gamedata: `ogs.sock.games[game_id].game_data`
+- Getting connection latency: `ogs.sock.games[game_id].latency`
+- Getting a move: `ogs.sock.games[game_id].callback_func['on_move']`
 
 
 ## To Implement
-TODO: Update this list
 
-- Pretty much everything
+- Implement callback function handling for:
+  - The clock
+  - Undo requested
+  - Undo Accepted
+- Implement proper challenge creation
+- Create open challenge
