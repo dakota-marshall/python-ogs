@@ -446,6 +446,8 @@ class OGSSocket:
     def game_connect(self, game_id: int):
         self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
 
+        return self.games[game_id]
+
     def game_disconnect(self, game_id: int):
         del self.games[game_id]
 
