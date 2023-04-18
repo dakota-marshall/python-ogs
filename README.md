@@ -93,9 +93,11 @@ This will authenticate you to OGS using your API credentials, and connect you to
 
 ## To Implement
 
-- Implement callback function handling for:
-  - The clock
-  - Undo requested
-  - Undo Accepted
-- Implement proper challenge creation
-- Create open challenge
+- Finish the game life cycle
+  - Implement callback function handling for:
+    - The clock
+    - Undo requested
+    - Undo Accepted
+  - Implement proper challenge creation
+  - Create open challenge
+  - Handle accepting / rejecting counting
