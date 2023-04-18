@@ -277,6 +277,9 @@ class OGSClient:
 
 class OGSGame:
     # Class for handling each OGSGame connected via the OGSSocket
+    # To receive data from the game, use the callback function to register functions to be called when data is received.
+    # on_move and on_clock are required for the game to function properly, on_undo is only for handling undo requests
+    
     def __init__(self, game_socket, game_id, auth_data, user_data):
         self.socket = game_socket
         self.game_id = game_id
@@ -286,17 +289,26 @@ class OGSGame:
         self.connect()
         self.game_data = {}
         self.latency = 0
-    
+        self.callback_func = {
+            'on_move': None,
+            'on_clock': None,
+            'on_undo': None
+        }
+
     def __del__(self):
         self.disconnect()
 
+    def register_callback(self, event: str, callback: Callable):
+        self.callback_func[event] = callback
+
+    # Low level socket functions
     def _game_call_backs(self):
 
         @self.socket.on(f'game/{self.game_id}/move')
         def _on_game_move(data):
-            #TODO: Handle Moves
             print(f"Got move: {data}")
-
+            self.callback_func['on_move'](data)
+            
         @self.socket.on(f'game/{self.game_id}/gamedata')
         def _on_game_data(data):
             print(f'Got Gamedata: {data}')
@@ -321,7 +333,8 @@ class OGSGame:
         def _on_undo_accepted(data):
             #TODO: Handle This
             print(f'Got Accepted Undo: {data}')
-
+    
+    # Send functions
     def connect(self):
         print(f"Connecting to game {self.game_id}")
         self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.user_data['id'], 'chat': False})
