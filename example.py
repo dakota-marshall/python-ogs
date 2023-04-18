@@ -11,7 +11,7 @@ password=""
 # its easier to manage multiple games this way.
 class Game:
 
-  def __init__(self, game_id: int, ogs: Callable)
+  def __init__(self, game_id: int, ogs: callable):
     self.game_id = game_id
     self.ogs = ogs
     # Connect to the game
@@ -19,13 +19,13 @@ class Game:
     # Register our callback function `on_move`
     self.game.register_callback(self.on_move)
 
-  def on_move(self, data: dict)
+  def on_move(self, data: dict):
     print(f"Recieved move from the API: {data}")
 
-  def move(self, move: str)
+  def move(self, move: str):
     self.game.move(move)
 
-  def pass_turn(self)
+  def pass_turn(self):
     self.game.pass_turn()
 
 # Instantiate Client
