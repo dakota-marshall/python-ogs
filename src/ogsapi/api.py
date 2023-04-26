@@ -47,7 +47,6 @@ class OGSClient:
             # Save Access Token, Refresh Token, and User ID
             # TODO: This should probably be made into a user object that has token and ID info
             self.access_token = response.json()['access_token']
-            print(self.access_token)
             self.refresh_token = response.json()['refresh_token']
             self.user_id = self.user_vitals()['id']
         else:
