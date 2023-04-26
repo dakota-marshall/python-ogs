@@ -90,14 +90,82 @@ This will authenticate you to OGS using your API credentials, and connect you to
 - Getting connection latency: `ogs.sock.games[game_id].latency`
 - Getting a move: `ogs.sock.games[game_id].callback_func['on_move']`
 
+### Currently Supported Time Controls
 
-## To Implement
+- Fischer
+- Byoyomi
+- None
 
-- Finish the game life cycle
-  - Implement callback function handling for:
-    - The clock
-    - Undo requested
-    - Undo Accepted
-  - Implement proper challenge creation
-  - Create open challenge
-  - Handle accepting / rejecting counting
+## Checklist
+
+Current checklist of API calls / events that are implemented
+
+- [ ] REST API
+  - [ ] Games
+    - [ ] GET - id
+    - [ ] GET - id/png
+    - [ ] GET - id/reviews
+    - [ ] GET - id/sgf
+  - [ ] Me
+    - [ ] GET - /
+    - [ ] GET - account_settings
+    - [ ] GET - blocks
+    - [ ] GET - friends
+    - [ ] GET - games
+    - [ ] GET - challenges
+    - [ ] GET - groups
+    - [ ] GET - ladders
+    - [ ] GET - settings
+    - [ ] GET - ui/overview
+  - [ ] Players
+    - [ ] GET - id
+    - [ ] GET - id/full
+    - [ ] GET - id/games
+    - [ ] GET - id/groups
+    - [ ] GET - id/ladders
+    - [ ] GET - id/tournaments
+- [ ] Realtime API Game Events
+  - [ ] Server to Client
+    - [ ] auto_resign
+    - [ ] chat
+    - [ ] chat/remove
+    - [ ] clear_auto_resign
+    - [x] clock
+    - [ ] conditional_moves
+    - [ ] error
+    - [x] gamedata
+    - [x] latency
+    - [ ] phase
+    - [ ] removed_stones
+    - [ ] removed_stones_accepted
+    - [ ] reset
+    - [ ] reset-chats
+    - [x] undo_accepted
+    - [x] undo_canceled
+    - [x] undo_requested
+  - Client to Server
+    - [ ] annul
+    - [ ] cancel
+    - [ ] chat
+    - [ ] chat/remove
+    - [ ] clear_delayed_resign
+    - [ ] conditional_moves/set
+    - [x] connect
+    - [ ] delayed_resign
+    - [x] disconnect
+    - [ ] latency
+    - [ ] log
+    - [x] move
+    - [ ] pause
+    - [ ] removed_stones/accept
+    - [ ] removed_stones/reject
+    - [ ] removed_stones/set
+    - [x] resign
+    - [ ] resume
+    - [ ] timed_out
+    - [x] undo/accept
+    - [ ] undo/cancel
+    - [ ] undo/request
+- [ ] Implement proper challenge creation
+- [ ] Create open challenge
+- [ ] Handle accepting / rejecting counting
