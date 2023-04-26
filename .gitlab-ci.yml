@@ -1,5 +1,4 @@
 package:
-    stage: package
     image: python:3
     script:
         - pip3 install --upgrade build twine
@@ -8,7 +7,6 @@ package:
     rules:
         - if: '$CI_COMMIT_BRANCH == "prod"'
 pages:
-    stage: docs
     image: python:3
     variables:
         GIT_DEPTH: 1000
