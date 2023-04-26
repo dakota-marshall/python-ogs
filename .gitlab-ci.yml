@@ -10,7 +10,7 @@ package:
         - python3 -m twine upload dist/*
     rules:
         - if: '$CI_COMMIT_BRANCH == "prod"'
-docs:
+pages:
     stage: docs
     image: python:3
     variables:
