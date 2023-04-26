@@ -338,7 +338,10 @@ class OGSGame:
         @self.socket.on(f'game/{self.game_id}/move')
         def _on_game_move(data):
             print(f"Got move: {data}")
-            self.callback_func['on_move'](data)
+            try:
+                self.callback_func['on_move'](data)
+            except TypeError as e:
+                raise OGSApiException("Callback function 'on_move' must be Type Callable") from e
             
         @self.socket.on(f'game/{self.game_id}/gamedata')
         def _on_game_data(data):
