@@ -365,6 +365,63 @@ class OGSGame:
             #TODO: Need to create a game clock and sync clock with this event
             print(f'Got Clock: {data}')
 
+            # Define clock parameters based on time control
+            # TODO: This expects us to receive the clock AFTER the game data, 
+            # which may not always the case  
+            match self.time_control['time_control']:
+                case 'byoyomi':
+                    self.clock = {
+                        'current_player': data['current_player'],
+                        'last_move': data['last_move'],
+                        'expiration': data['expiration'],
+                        'black_time': {
+                            'thinking_time': data['black_time']['thinking_time'],
+                            'periods': data['black_time']['periods'],
+                            'period_time': data['black_time']['period_time']
+                        },
+                        'white_time': {
+                            'thinking_time': data['white_time']['thinking_time'],
+                            'periods': data['white_time']['periods'],
+                            'period_time': data['white_time']['period_time']
+                        },
+                        'received': data['now'],
+                        'latency_when_received': self.latency
+                    }
+                case 'fischer':
+                    self.clock = {
+                        'current_player': data['current_player'],
+                        'last_move': data['last_move'],
+                        'expiration': data['expiration'],
+                        'black_time': {
+                            'thinking_time': data['black_time']['thinking_time'],
+                            'skip_bonus': data['black_time']['skip_bonus']
+                        },
+                        'white_time': {
+                            'thinking_time': data['white_time']['thinking_time'],
+                            'skip_bonus': data['white_time']['skip_bonus']
+                        },
+                        'received': data['now'],
+                        'latency_when_received': self.latency
+                    }
+                case 'canadian':
+                    # TODO: Implement
+                    self.clock = {}
+                case 'absolute':
+                    # TODO: Implement
+                    self.clock = {}
+                case 'none':
+                    self.clock = {
+                        'current_player': data['current_player'],
+                        'last_move': data['last_move'],
+                        'expiration': data['expiration']
+                    }
+            
+            # Call the on_clock callback
+            try:
+                self.callback_func['on_clock'](self.clock)
+            except TypeError as e:
+                raise OGSApiException("Callback function 'on_clock' must be Type Callable") from e
+
         @self.socket.on(f'game/{self.game_id}/latency')
         def _on_game_latency(data):
             print(f'Got Latency: {data}')
