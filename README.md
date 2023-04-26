@@ -9,6 +9,8 @@ An API wrapper written in python for the Online-Go Server's (OGS) REST API and R
 
 **THIS IS STILL HEAVILY IN DEVELOPMENT. VERY MUCH NOT READY FOR USE**
 
+Read the documentation here for more info: https://ogs-python.dakotamarshall.net/
+
 ## Install
 
 ### Pip Package
