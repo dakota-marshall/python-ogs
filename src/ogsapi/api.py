@@ -286,8 +286,38 @@ class OGSGame:
         self.auth_data = auth_data
         self._game_call_backs()
         self.connect()
-        self.game_data = {}
-        self.latency = 0
+
+        # Define relevant game data
+        self.name: str = None
+        self.private: bool = None
+        self.white_player: dict = {
+            'username': None,
+            'rank': None,
+            'professional': None,
+            'id': None
+        }
+        self.black_player: dict = {
+            'username': None,
+            'rank': None,
+            'professional': None,
+            'id': None
+        }
+        self.ranked: bool = None
+        self.handicap: int = None
+        self.komi: float = None
+        self.width: int = None
+        self.height: int = None
+        self.ruleset: str = None
+        self.time_control: dict = None
+        self.phase: str = None
+        self.move_list: list = None
+        self.initial_state: dict = {
+            'black': None,
+            'white': None
+        }
+        self.start_time: int = None
+        self.clock = {}
+        self.latency = 100
         self.callback_func = {
             'on_move': None,
             'on_clock': None,
@@ -310,8 +340,25 @@ class OGSGame:
             
         @self.socket.on(f'game/{self.game_id}/gamedata')
         def _on_game_data(data):
-            print(f'Got Gamedata: {data}')
+            print(f'Got Gamedata for game {self.game_id}: {data}')
+
+            # Set important game data
             self.game_data = data
+            self.name = data['game_name']
+            self.private = data['private']
+            self.white_player = data['players']['white']
+            self.black_player = data['players']['black']
+            self.ranked = data['ranked']
+            self.handicap = data['handicap']
+            self.komi = data['komi']
+            self.width = data['width']
+            self.height = data['height']
+            self.ruleset = data['rules']
+            self.time_control = data['time_control']
+            self.phase = data['phase']
+            self.move_list = data['moves']
+            self.initial_state = data['initial_state']
+            self.start_time = data['start_time']
 
         @self.socket.on(f'game/{self.game_id}/clock')
         def _on_game_clock(data):
