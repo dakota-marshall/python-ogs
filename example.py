@@ -1,4 +1,4 @@
-from ogsapi.api import OGSClient
+from src.ogsapi.api import OGSClient
 
 # Prep variables
 client_id=""
@@ -17,10 +17,15 @@ class Game:
     # Connect to the game
     self.game = self.ogs.sock.game_connect(game_id)
     # Register our callback function `on_move`
-    self.game.register_callback(self.on_move)
+    self.game.register_callback('on_move', self.on_move)
+    self.game.register_callback('on_clock', self.on_clock)
 
   def on_move(self, data: dict):
-    print(f"Recieved move from the API: {data}")
+    print(f"Received move from the API: {data}")
+
+  def on_clock(self, data: dict):
+    print(f"Received clock from the API: {data}")
+    self.clock = data
 
   def move(self, move: str):
     self.game.move(move)
@@ -33,7 +38,8 @@ ogs = OGSClient(
     client_id=client_id, 
     client_secret=client_secret, 
     username=username, 
-    password=password
+    password=password,
+    debug=False
   )
 
 # Still need to connect to chat and notifications manually
@@ -41,7 +47,7 @@ ogs.sock.notification_connect()
 ogs.sock.chat_connect()
 
 # Instantiate the example Game class and pass it the game_id and ogs object
-game_id = 1234567
+game_id = 12345678
 game = Game(game_id, ogs)
 
 # Make a move
