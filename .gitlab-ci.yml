@@ -1,6 +1,3 @@
-stages:
-    - package
-    - docs
 package:
     stage: package
     image: python:3
