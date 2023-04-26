@@ -431,11 +431,27 @@ class OGSGame:
         def _on_undo_requested(data):
             #TODO: Handle This 
             print(f'Got Undo Request: {data}')
+            try:
+                self.callback_func['on_undo_requested'](data)
+            except TypeError as e:
+                raise OGSApiException("Callback function 'on_undo_requested' must be Type Callable") from e
         
         @self.socket.on(f'game/{self.game_id}/undo_accepted')
         def _on_undo_accepted(data):
             #TODO: Handle This
             print(f'Got Accepted Undo: {data}')
+            try:
+                self.callback_func['on_undo_accepted'](data)
+            except TypeError as e:
+                raise OGSApiException("Callback function 'on_undo_accepted' must be Type Callable") from e
+        
+        @self.socket.on(f'game/{self.game_id}/undo_cancelled')
+        def _on_undo_cancelled(data):
+            print(f"Got Cancelled Undo: {data}")
+            try:
+                self.callback_func['on_undo_cancelled'](data)
+            except TypeError as e:
+                raise OGSApiException("Callback function 'on_undo_cancelled' must be Type Callable") from e
     
     # Send functions
     def connect(self):
