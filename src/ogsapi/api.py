@@ -321,7 +321,9 @@ class OGSGame:
         self.callback_func = {
             'on_move': None,
             'on_clock': None,
-            'on_undo': None
+            'on_undo_requested': None,
+            'on_undo_accepted': None,
+            'on_undo_rejected': None,
         }
 
     def __del__(self):
