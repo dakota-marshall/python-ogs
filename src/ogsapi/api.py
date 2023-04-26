@@ -8,10 +8,47 @@ from time import sleep, time
 # TODO: Should probably implement a user class that contains all user info and functions
 
 class OGSApiException(Exception):
+    """Exception raised for errors in the OGS API."""
     pass
 
 class OGSClient:
-    def __init__(self, client_id, client_secret, username, password):
+    """Connect to and interact with the OGS REST API and SocketIO API.
+
+    Examples:
+        >>> from src.ogsapi.api import OGSClient
+        >>> ogs = OGSClient(
+            client_id=client_id, 
+            client_secret=client_secret, 
+            username=username, 
+            password=password,
+            debug=False
+            )
+        Connecting to Websocket
+        Connected to socket, authenticating
+
+    Args:
+        client_id (str): Client ID from OGS
+        client_secret (str): Client Secret from OGS
+        username (str): Username of OGS account
+        password (str): Password of OGS account
+        debug (bool, optional): Enable debug logging. Defaults to False.        
+
+    Attributes:
+        client_id (str): Client ID from OGS
+        client_secret (str): Client Secret from OGS
+        username (str): Username of OGS account
+        password (str): Password of OGS account
+        access_token (str): Access Token from OGS
+        refresh_token (str): Refresh Token from OGS
+        user_id (int): User ID from OGS
+        base_url (str): Base URL for OGS API
+        api_ver (str): API version for OGS API
+        sock (OGSSocket): SocketIO connection to OGS
+    
+    Returns:
+        OGSClient: OGSClient object
+    """
+    def __init__(self, client_id, client_secret, username, password, debug: bool = False):
         self.client_id = client_id
         self.client_secret = client_secret
         self.username = username
@@ -32,6 +69,8 @@ class OGSClient:
 
     # TODO: All these internal functions should be moved into private functions
     def authenticate(self):
+        """Authenticate with the OGS API and save the access token and user ID."""
+
         endpoint = f'{self.base_url}/oauth2/token/'
         try:
             response = requests.post(endpoint, data={
@@ -54,6 +93,16 @@ class OGSClient:
 
     # TODO: The GET POST and PUT functions can be refactored into its own class, because DRY
     def get_rest_endpoint(self, endpoint: str, params: dict = None):
+        """Make a GET request to the OGS REST API.
+        
+        Args:
+            endpoint (str): Endpoint to make request to
+            params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}'
@@ -69,6 +118,16 @@ class OGSClient:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
     def post_rest_endpoint(self, endpoint: str, payload: dict, params: dict = None):
+        """Make a POST request to the OGS REST API.
+        
+        Args:
+            endpoint (str): Endpoint to make request to
+            payload (dict): Payload to pass to the endpoint
+            params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}',
@@ -85,6 +144,17 @@ class OGSClient:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
     def put_rest_endpoint(self, endpoint: str, payload: dict, params: dict = None):
+        """Make a PUT request to the OGS REST API.
+        
+        Args:
+            endpoint (str): Endpoint to make request to
+            payload (dict): Payload to pass to the endpoint
+            params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}',
@@ -101,6 +171,17 @@ class OGSClient:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
     def delete_rest_endpoint(self, endpoint: str, payload: dict, params: dict = None):
+        """Make a DELETE request to the OGS REST API.
+        
+        Args:
+            endpoint (str): Endpoint to make request to
+            payload (dict): Payload to pass to the endpoint
+            params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
             'Authorization' : f'Bearer {self.access_token}',
@@ -119,10 +200,22 @@ class OGSClient:
     # User Specific Resources: /me
 
     def user_vitals(self):
+        """Get the user's vitals.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = '/me'
         return self.get_rest_endpoint(endpoint)
     
     def user_settings(self):
+        """Get the user's settings.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = '/me/settings/'
         return self.get_rest_endpoint(endpoint=endpoint)
     
@@ -135,6 +228,20 @@ class OGSClient:
             website: str = None,
             about: str = None
         ):
+        """Update the user's settings.
+        
+        Args:
+            username (str, optional): New username. Defaults to None.
+            first_name (str, optional): New first name. Defaults to None.
+            last_name (str, optional): New last name. Defaults to None.
+            private_name (bool, optional): Whether or not to make the name private. Defaults to None.
+            country (str, optional): New country. Defaults to None.
+            website (str, optional): New website. Defaults to None.
+            about (str, optional): New about. Defaults to None.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
 
         # This is a bit of a mess, but it works, should be refactored
         payload = {}
@@ -158,14 +265,38 @@ class OGSClient:
         return self.put_rest_endpoint(endpoint=endpoint, payload=payload)
 
     def user_games(self):
+        """Get the user's games.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = '/me/games'
         return self.get_rest_endpoint(endpoint)
 
     def user_friends(self, username: str = None):
+        """Get the user's friends.
+        
+        Args:
+            username (str, optional): Username of the user to get friends of. Defaults to None.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = '/me/friends'
         return self.get_rest_endpoint(endpoint=endpoint, params={'username' : username})
 
     def send_friend_request(self, username: str):
+        """Send a friend request to a user.
+        
+        Args:
+            username (str): Username of the user to send a friend request to.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = '/me/friends'
         player_id = self.get_player(username)['id']
         payload = {
@@ -174,6 +305,15 @@ class OGSClient:
         return self.post_rest_endpoint(endpoint=endpoint, payload=payload)
 
     def remove_friend(self, username: str):
+        """Remove a friend.
+        
+        Args:
+            username (str): Username of the user to remove as a friend.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = '/me/friends/'
         player_id = self.get_player(username)['id']
         payload = {
@@ -185,12 +325,30 @@ class OGSClient:
     # Players: /players
 
     def get_player(self, player_username):
+        """Get a player by username.
+        
+        Args:
+            player_username (str): Username of the player to get.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         encoded_name = urllib.parse.quote(player_username)
         endpoint = f'/players/'
         return self.get_rest_endpoint(endpoint=endpoint, params={'username' : encoded_name})['results'][0]
 
     # TODO: Need to make these customizable 
     def challenge_player(self, player_username):
+        """Challenge a player to a game. WIP
+        
+        Args:
+            player_username (str): Username of the player to challenge.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         game_settings = {
             "initialized": False,
             "min_ranking": -1000,
@@ -240,6 +398,12 @@ class OGSClient:
 
     # TODO: Change these to use the 'challenger' parameter instead of looping through all challenges
     def received_challenges(self):
+        """Get all received challenges.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = '/me/challenges/'
         received_challenges = []
         all_challenges = self.get_rest_endpoint(endpoint)['results']
@@ -250,6 +414,11 @@ class OGSClient:
 
     # TODO: Same as above
     def sent_challenges(self):
+        """Get all sent challenges.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
         endpoint = '/me/challenges'
         sent_challenges = []
         all_challenges = self.get_rest_endpoint(endpoint)['results']
@@ -259,14 +428,41 @@ class OGSClient:
         return sent_challenges
     
     def accept_challenge(self, challenge_id):
+        """Accept a challenge.
+        
+        Args:
+            challenge_id (str): ID of the challenge to accept.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = f'/me/challenges/{challenge_id}/accept'
         return self.post_rest_endpoint(endpoint=endpoint,payload={})
     
     def decline_challenge(self, challenge_id):
+        """Decline a challenge.
+        
+        Args:
+            challenge_id (str): ID of the challenge to decline.
+        
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = f'/me/challenges/{challenge_id}/'
         return self.delete_rest_endpoint(endpoint=endpoint, payload={})
 
     def challenge_details(self, challenge_id):
+        """Get details of a challenge.
+        
+        Args:
+            challenge_id (str): ID of the challenge to get details of.
+            
+        Returns:
+            dict: JSON response from the endpoint
+        """
+
         endpoint = f'/me/challenges/{challenge_id}'
         return self.get_rest_endpoint(endpoint=endpoint)
 
@@ -275,6 +471,39 @@ class OGSClient:
         return self.get_rest_endpoint(endpoint)
 
 class OGSGame:
+    """OGSGame class for handling games connected via the OGSSocket.
+    
+    Args:
+        game_socket (OGSSocket): OGSSocket object to connect to the game.
+        game_id (str): ID of the game to connect to.
+        auth_data (dict): Authentication data for the game.
+        user_data (dict): User data for the game.
+        
+    Attributes:
+        socket (OGSSocket): OGSSocket object to connect to the game.
+        game_id (str): ID of the game to connect to.
+        auth_data (dict): Authentication data for the game.
+        user_data (dict): User data for the game.
+        name (str): Name of the game.
+        private (bool): Whether the game is private or not.
+        white_player (dict): Dictionary containing information about the white player.
+        black_player (dict): Dictionary containing information about the black player.
+        ranked (bool): Whether the game is ranked or not.
+        handicap (int): Handicap of the game.
+        komi (float): Komi of the game.
+        width (int): Width of the board.
+        height (int): Height of the board.
+        ruleset (str): Ruleset of the game.
+        time_control (dict): Dictionary containing information about the time control.
+        phase (str): Phase of the game.
+        move_list (list): List of moves in the game.
+        initial_state (dict): Initial state of the game.
+        start_time (int): Start time of the game.
+        clock (dict): Dictionary containing the clock data.
+        latency (int): Latency of the game.
+        callback_func (dict): Dictionary containing the callback functions.
+
+    """
     # Class for handling each OGSGame connected via the OGSSocket
     # To receive data from the game, use the callback function to register functions to be called when data is received.
     # on_move and on_clock are required for the game to function properly, on_undo is only for handling undo requests
@@ -284,7 +513,9 @@ class OGSGame:
         self.game_id = game_id
         self.user_data = user_data
         self.auth_data = auth_data
+        # Define callback functions from the API
         self._game_call_backs()
+        # Connect to the game
         self.connect()
 
         # Define relevant game data
@@ -330,6 +561,18 @@ class OGSGame:
         self.disconnect()
 
     def register_callback(self, event: str, callback: Callable):
+        """Register a callback function for receiving data from the API.
+        
+        Args:
+            event (str): Event to register the callback function for.
+                Accepted events are:
+                    - on_move
+                    - on_clock
+                    - on_undo_requested
+                    - on_undo_accepted
+                    - on_undo_rejected
+            callback (Callable): Callback function to register.   
+        """
         self.callback_func[event] = callback
 
     # Low level socket functions
@@ -460,26 +703,40 @@ class OGSGame:
     
     # Send functions
     def connect(self):
+        """Connect to the game"""
         print(f"Connecting to game {self.game_id}")
         self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.user_data['id'], 'chat': False})
 
     def disconnect(self):
+        """Disconnect from the game"""
         print(f"Disconnecting game {self.game_id}")
         self.socket.emit(event="game/disconnect", data={'game_id': self.game_id})
 
     def move(self, move):
+        """Submit a move to the game
+        
+        Args:
+            move (str): The move to submit to the game. Accepts GTP format.
+            
+        Examples:
+            >>> game.move('B2')
+        """
+
         print(f"Submitting move {move} to game {self.game_id}")
         self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': move})
 
     def resign(self):
+        """Resign the game"""
         print(f"Resigning game {self.game_id}")
         self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})  
     
     def undo(self):
+        """Request an undo on the game"""
         print(f"Requesting undo on game {self.game_id}")
         self.socket.emit(event="game/undo/request", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id})
     
     def pass_turn(self):
+        """Pass the turn in the game"""
         print(f'Submitting move pass to game {self.game_id}')
         self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': '..'})
     
@@ -511,7 +768,26 @@ class OGSGame:
             'clock': self.clock
         }
 class OGSSocket:
-    def __init__(self, bearer_token: str):
+    """OGS Socket Class for handling SocketIO connections to OGS
+    
+    Args:
+        bearer_token (str): The bearer token to use for authentication
+        debug (bool, optional): Enable debug logging. Defaults to False.
+    
+    Attributes:
+        clock_drift (float): The clock drift of the socket
+        clock_latency (float): The clock latency of the socket
+        last_ping (int): The last ping time of the socket
+        last_issued_ping (int): The last time a ping was issued
+        games (dict): A dict of connected game objects
+        bearer_token (str): The bearer token used for authentication
+        auth_data (dict): The auth data returned from the OGS API
+        user_data (dict): The user data returned from the OGS API
+        socket (socketio.Client): The socketio client object
+        
+    """
+
+    def __init__(self, bearer_token: str, debug: bool = False):
         # Clock Settings
         self.clock_drift = 0.0
         self.clock_latency = 0.0
@@ -521,7 +797,7 @@ class OGSSocket:
         self.games = {}
         self.bearer_token = bearer_token
         # TODO: Allow user to enable logger functions when creating the object
-        self.socket = socketio.Client(logger=False, engineio_logger=False)
+        self.socket = socketio.Client(logger=debug, engineio_logger=False)
         try:
             self.auth_data = requests.get('https://online-go.com/api/v1/ui/config', headers={'Authorization': f'Bearer {bearer_token}'}).json()
         except requests.exceptions.RequestException as e:
@@ -534,6 +810,7 @@ class OGSSocket:
         self.disconnect()
 
     def connect(self):
+        """Connect to the socket"""
         self.call_backs()
         print("Connecting to Websocket")
         try:
@@ -543,19 +820,23 @@ class OGSSocket:
 
     # Listens to events received from the socket via the decorators, and calls the appropriate function
     def call_backs(self):
+        """Set the callback functions for the socket"""
 
         @self.socket.on('connect')
         def authenticate():
+            """Authenticate to the socket"""
             print("Connected to socket, authenticating")
             self.socket.emit(event="authenticate", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username'], "jwt": self.auth_data['user_jwt']})
             sleep(1)
         
         @self.socket.on('hostinfo')
         def on_hostinfo(data):
+            """Called when hostinfo is received on the socket"""
             print(f"Got: {data}")
         
         @self.socket.on('net/pong')
         def on_pong(data):
+            """Called when a pong is received on the socket"""
             now = time() * 1000
             latency = now - data["client"]
             drift = ((now - latency / 2) - data["server"])
@@ -566,42 +847,66 @@ class OGSSocket:
         
         @self.socket.on('active_game')
         def on_active_game(data):
+            """Called when an active game is received on the socket"""
             print(f"Got active game: {data}")
 
         @self.socket.on('game/*')
         def on_game(data):
+            """Catch all for game events"""
             print(f"Got game data: {data}")
 
         @self.socket.on('notification')
         def on_notification(data):
+            """Called when a notification is received on the socket"""
             print(f"Got notification: {data}")
 
         @self.socket.on('*')
         def catch_all(event, data):
+            """Catch all for events"""
             print(f"Got Event: {event} \n {data}")
 
     # Get info on connected server
     def host_info(self):
+        """Get the host info of the socket"""
         self.socket.emit(event="hostinfo", namespace='/')
         print("Emit hostinfo")
     
     def ping(self):
+        """Ping the socket"""
         self.socket.emit(event="net/ping", data={"client": int(time() * 1000), "drift": self.clock_drift, "latency": self.clock_latency})
     
     def notification_connect(self):
+        """Connect to the notification socket"""
         self.socket.emit(event="notification/connect", data={"auth": self.auth_data['notification_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
     
     def chat_connect(self):
+        """Connect to the chat socket"""
         self.socket.emit(event="chat/connect", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
 
     def game_connect(self, game_id: int):
+        """Connect to a game
+        
+        Args:
+            game_id (int): The id of the game to connect to
+            
+        Returns:
+            OGSGame: The game object
+        """
+
         self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
 
         return self.games[game_id]
 
     def game_disconnect(self, game_id: int):
+        """Disconnect from a game
+        
+        Args:
+            game_id (int): The id of the game to disconnect from
+        """
+
         del self.games[game_id]
 
     def disconnect(self):
+        """Disconnect from the socket"""
         self.socket.disconnect()
         print("Disconnected from WebSocket")
