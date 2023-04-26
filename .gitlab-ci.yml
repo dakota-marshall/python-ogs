@@ -1,5 +1,6 @@
 stages:
     - package
+    - docs
 package:
     stage: package
     image: python:3
@@ -9,3 +10,14 @@ package:
         - python3 -m twine upload dist/*
     rules:
         - if: '$CI_COMMIT_BRANCH == "prod"'
+docs:
+    stage: docs
+    image: python:3
+    variables:
+        GIT_DEPTH: 1000
+    script:
+        - pip3 install --upgrade mkdocs "mkdocstrings[python]" mkdocs-material mkdocs-git-authors-plugin
+        - mkdocs build -d public/
+    rules:
+        - if: '$CI_COMMIT_BRANCH == "prod"'
+

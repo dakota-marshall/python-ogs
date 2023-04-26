@@ -1,0 +1,30 @@
+site_name: Python OGS
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+  features:
+    - content.action.edit
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+
+extra:
+  version:
+    provider: mike
+
+repo_url: https://gitlab.com/dakota.marshall/ogs-python
+repo_name: dakota.marshall/ogs-python
+edit_uri: edit/main/docs/
+
+plugins:
+  - mkdocstrings
+  - search
+  - git-authors
+
+nav:
+  - Home: index.md
+  - Documentation: api.md
