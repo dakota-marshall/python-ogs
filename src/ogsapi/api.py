@@ -477,7 +477,34 @@ class OGSGame:
     def pass_turn(self):
         print(f'Submitting move pass to game {self.game_id}')
         self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': '..'})
+    
+    # Pass game attributes as a dict
+    def asdict(self):
+        """Return the game as a dict
+        
+        Returns:
+            dict: The game as a dict
+        """
 
+        return {
+            'game_id': self.game_id,
+            'name': self.name,
+            'private': self.private,
+            'white_player': self.white_player,
+            'black_player': self.black_player,
+            'ranked': self.ranked,
+            'handicap': self.handicap,
+            'komi': self.komi,
+            'width': self.width,
+            'height': self.height,
+            'ruleset': self.ruleset,
+            'time_control': self.time_control,
+            'phase': self.phase,
+            'move_list': self.move_list,
+            'initial_state': self.initial_state,
+            'start_time': self.start_time,
+            'clock': self.clock
+        }
 class OGSSocket:
     def __init__(self, bearer_token: str):
         # Clock Settings
