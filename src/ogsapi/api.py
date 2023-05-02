@@ -554,7 +554,7 @@ class OGSGame:
             'on_clock': None,
             'on_undo_requested': None,
             'on_undo_accepted': None,
-            'on_undo_rejected': None,
+            'on_undo_canceled': None,
         }
 
     def __del__(self):
@@ -570,7 +570,7 @@ class OGSGame:
                     - on_clock
                     - on_undo_requested
                     - on_undo_accepted
-                    - on_undo_rejected
+                    - on_undo_canceled
             callback (Callable): Callback function to register.   
         """
         self.callback_func[event] = callback
@@ -693,13 +693,13 @@ class OGSGame:
             except TypeError as e:
                 raise OGSApiException("Callback function 'on_undo_accepted' must be Type Callable") from e
         
-        @self.socket.on(f'game/{self.game_id}/undo_cancelled')
-        def _on_undo_cancelled(data):
-            print(f"Got Cancelled Undo: {data}")
+        @self.socket.on(f'game/{self.game_id}/undo_canceled')
+        def _on_undo_canceled(data):
+            print(f"Got Canceled Undo: {data}")
             try:
-                self.callback_func['on_undo_cancelled'](data)
+                self.callback_func['on_undo_canceled'](data)
             except TypeError as e:
-                raise OGSApiException("Callback function 'on_undo_cancelled' must be Type Callable") from e
+                raise OGSApiException("Callback function 'on_undo_canceled' must be Type Callable") from e
     
     # Send functions
     def connect(self):
