@@ -861,11 +861,6 @@ class OGSSocket:
             """Called when an active game is received on the socket"""
             print(f"Got active game: {data}")
 
-        @self.socket.on('game/*')
-        def on_game(data):
-            """Catch all for game events"""
-            print(f"Got game data: {data}")
-
         @self.socket.on('notification')
         def on_notification(data):
             """Called when a notification is received on the socket"""
