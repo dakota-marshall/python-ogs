@@ -552,6 +552,7 @@ class OGSGame:
         self.callback_func = {
             'on_move': None,
             'on_clock': None,
+            'on_phase_change': None,
             'on_undo_requested': None,
             'on_undo_accepted': None,
             'on_undo_canceled': None,
@@ -568,6 +569,7 @@ class OGSGame:
                 Accepted events are:
                     - on_move
                     - on_clock
+                    - on_phase_change
                     - on_undo_requested
                     - on_undo_accepted
                     - on_undo_canceled
@@ -669,6 +671,15 @@ class OGSGame:
                 self.callback_func['on_clock'](self.clock)
             except TypeError as e:
                 raise OGSApiException("Callback function 'on_clock' must be Type Callable") from e
+
+        @self.socket.on(f'game/{self.game_id}/phase')
+        def _on_game_phase(data):
+            print(f"Got Phase Change: {data}")
+            self.phase = data
+            try:
+                self.callback_func['on_phase_change'](self.phase)
+            except TypeError as e:
+                raise OGSApiException("Callback function 'on_phase_change' must be Type Callable") from e
 
         @self.socket.on(f'game/{self.game_id}/latency')
         def _on_game_latency(data):

@@ -135,7 +135,7 @@ Current checklist of API calls / events that are implemented
     - [ ] error
     - [x] gamedata
     - [x] latency
-    - [ ] phase
+    - [x] phase
     - [ ] removed_stones
     - [ ] removed_stones_accepted
     - [ ] reset
