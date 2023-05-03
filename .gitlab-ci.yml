@@ -12,6 +12,7 @@ pages:
         GIT_DEPTH: 1000
     script:
         - pip3 install --upgrade mkdocs "mkdocstrings[python]" mkdocs-material mkdocs-git-authors-plugin
+        - cp README.md docs/index.md
         - mkdocs build -d public/
     artifacts:
         paths:
