@@ -335,9 +335,8 @@ class OGSClient:
             dict: JSON response from the endpoint
         """
 
-        encoded_name = urllib.parse.quote(player_username)
         endpoint = f'/players/'
-        return self.get_rest_endpoint(endpoint=endpoint, params={'username' : encoded_name})['results'][0]
+        return self.get_rest_endpoint(endpoint=endpoint, params={'username' : player_username})['results'][0]
 
     # TODO: Need to make these customizable 
     def create_challenge(self, player_username: str = None, **game_settings):
