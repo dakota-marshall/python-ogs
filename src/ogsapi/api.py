@@ -346,6 +346,11 @@ class OGSClient:
         Make sure that you pass the correct time control settings for the time control you want to use.
         The other time control settings will be ignored.
         
+        Example:
+            >>> ogs.create_challenge(player_username='test', main_time=300, byoyomi_time=30, byoyomi_stones=5)
+            Challenging player: test - 1234567
+            (20328495, 53331333)
+
         Args:
             player_username (str): Username of the player to challenge. 
                 If used will issue the challenge to the player. Defaults to None.
