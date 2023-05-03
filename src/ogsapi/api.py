@@ -345,7 +345,7 @@ class OGSClient:
         Make sure that you pass the correct time control settings for the time control you want to use.
         The other time control settings will be ignored.
         
-        Example:
+        Examples:
             >>> ogs.create_challenge(player_username='test', main_time=300, byoyomi_time=30, byoyomi_stones=5)
             Challenging player: test - 1234567
             (20328495, 53331333)
@@ -383,12 +383,12 @@ class OGSClient:
                 only used if byoyomi time control is used.
             byoyomi_periods_max (int): Maximum periods of the game. Defaults to 5.
                 only used if byoyomi time control is used.
-            fisher_time_initial_time (int): Initial time of the game in seconds. Defaults to 900.
-                only used if fisher time control is used.
-            fisher_time_increment (int): Increment of the game in seconds. Defaults to 0.
-                only used if fisher time control is used.
-            fisher_time_max_time (int): Maximum time of the game in seconds. Defaults to 1800.
-                only used if fisher time control is used.       
+            fischer_time_initial_time (int): Initial time of the game in seconds. Defaults to 900.
+                only used if fischer time control is used.
+            fischer_time_increment (int): Increment of the game in seconds. Defaults to 0.
+                only used if fischer time control is used.
+            fischer_time_max_time (int): Maximum time of the game in seconds. Defaults to 1800.
+                only used if fischer time control is used.       
             
         Returns:
             challenge_id (int): ID of the challenge created
