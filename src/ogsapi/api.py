@@ -807,7 +807,12 @@ class OGSSocket:
         # Dict of connected game objects
         self.games = {}
         self.bearer_token = bearer_token
-        # TODO: Allow user to enable logger functions when creating the object
+        # Socket level callbacks
+        self.client_callbacks = {
+            'notification': None,
+            'chat': None,
+            'error': None,
+        }
         self.socket = socketio.Client(logger=debug, engineio_logger=False)
         try:
             self.auth_data = requests.get('https://online-go.com/api/v1/ui/config', headers={'Authorization': f'Bearer {bearer_token}'}).json()
@@ -822,15 +827,28 @@ class OGSSocket:
 
     def connect(self):
         """Connect to the socket"""
-        self.call_backs()
+        self.socket_callbacks()
         print("Connecting to Websocket")
         try:
             self.socket.connect('https://online-go.com/socket.io/?EIO=4', transports='websocket', headers={"Authorization" : f"Bearer {self.bearer_token}"})
         except:
             raise OGSApiException("Failed to connect to OGS Websocket")
 
+    def register_callback(self, event: str, callback: Callable):
+        """Register a callback function for receiving data from the API.
+        
+        Args:
+            event (str): Event to register the callback function for.
+                Accepted events are:
+                    - notification
+                    - chat
+                    - error
+            callback (Callable): Callback function to register.   
+        """
+        self.callback_func[event] = callback
+
     # Listens to events received from the socket via the decorators, and calls the appropriate function
-    def call_backs(self):
+    def socket_callbacks(self):
         """Set the callback functions for the socket"""
 
         @self.socket.on('connect')
@@ -865,6 +883,16 @@ class OGSSocket:
         def on_notification(data):
             """Called when a notification is received on the socket"""
             print(f"Got notification: {data}")
+
+        @self.socket.on('ERROR')
+        def on_error(data):
+            """Called when an error is received from the server"""
+            #TODO: Decide whether or not this needs to be a callback
+            print(f"Got error: {data}")
+            try:
+                self.client_callbacks['error'](data)
+            except TypeError as e:
+                raise OGSApiException("Callback function 'error' must be Type Callable") from e
 
         @self.socket.on('*')
         def catch_all(event, data):

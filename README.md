@@ -134,7 +134,7 @@ Current checklist of API calls / events that are implemented
     - [ ] clear_auto_resign
     - [x] clock
     - [ ] conditional_moves
-    - [ ] error
+    - [x] error
     - [x] gamedata
     - [x] latency
     - [x] phase
