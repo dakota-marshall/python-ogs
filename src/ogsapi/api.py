@@ -811,7 +811,6 @@ class OGSSocket:
         # Socket level callbacks
         self.client_callbacks = {
             'notification': None,
-            'chat': None,
             'error': None,
         }
         self.socket = socketio.Client(logger=debug, engineio_logger=False)
