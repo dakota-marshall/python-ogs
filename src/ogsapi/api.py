@@ -392,6 +392,7 @@ class OGSClient:
         """
         time_control = game_settings.get('time_control', 'byoyomi')
         # Set common parameters
+        time_control_parameters = {}
         time_control_parameters['speed'] = game_settings.get('speed', 'correspondence')
         time_control_parameters['pause_on_weekends'] = game_settings.get('pause_on_weekends', False)
         time_control_parameters['time_control'] = time_control
