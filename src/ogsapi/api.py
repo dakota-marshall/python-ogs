@@ -459,11 +459,11 @@ class OGSClient:
             player_id = self.get_player(player_username)['id']
             print(f"Challenging player: {player_username} - {player_id}")
             endpoint = f'/players/{player_id}/challenge/'
-            response = self.post_rest_endpoint(endpoint, game_settings)
+            response = self.post_rest_endpoint(endpoint, challenge)
         else:
             endpoint = '/challenges/'
             print("Creating open challenge")
-            response = self.post_rest_endpoint(endpoint, game_settings)
+            response = self.post_rest_endpoint(endpoint, challenge)
 
         challenge_id = response['challenge']
         game_id = response['game']
