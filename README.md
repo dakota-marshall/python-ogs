@@ -169,5 +169,5 @@ Current checklist of API calls / events that are implemented
     - [ ] undo/cancel
     - [ ] undo/request
 - [x] Implement proper challenge creation
-- [ ] Create open challenge
+- [x] Create open challenge
 - [ ] Handle accepting / rejecting counting
