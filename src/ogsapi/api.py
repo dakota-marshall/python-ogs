@@ -45,9 +45,7 @@ class OGSClient:
         base_url (str): Base URL for OGS API
         api_ver (str): API version for OGS API
         sock (OGSSocket): SocketIO connection to OGS
-    
-    Returns:
-        OGSClient: OGSClient object
+
     """
     def __init__(self, client_id, client_secret, username, password, debug: bool = False):
         self.client_id = client_id
@@ -101,7 +99,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
             
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
@@ -127,7 +125,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
         
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
@@ -153,7 +151,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
             
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
@@ -180,7 +178,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
         
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
@@ -204,7 +202,7 @@ class OGSClient:
         """Get the user's vitals.
         
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = '/me'
@@ -214,7 +212,7 @@ class OGSClient:
         """Get the user's settings.
         
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = '/me/settings/'
@@ -241,7 +239,7 @@ class OGSClient:
             about (str, optional): New about. Defaults to None.
             
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         # This is a bit of a mess, but it works, should be refactored
@@ -269,7 +267,7 @@ class OGSClient:
         """Get the user's games.
         
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = '/me/games'
@@ -282,7 +280,7 @@ class OGSClient:
             username (str, optional): Username of the user to get friends of. Defaults to None.
             
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = '/me/friends'
@@ -295,7 +293,7 @@ class OGSClient:
             username (str): Username of the user to send a friend request to.
             
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = '/me/friends'
@@ -312,7 +310,7 @@ class OGSClient:
             username (str): Username of the user to remove as a friend.
         
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = '/me/friends/'
@@ -332,7 +330,7 @@ class OGSClient:
             player_username (str): Username of the player to get.
         
         Returns:
-            dict: JSON response from the endpoint
+            player_data (dict): Player data returned from the endpoint
         """
 
         endpoint = f'/players/'
@@ -480,7 +478,7 @@ class OGSClient:
         """Get all received challenges.
         
         Returns:
-            dict: JSON response from the endpoint
+            challenges (dict): JSON response from the endpoint
         """
 
         endpoint = '/me/challenges/'
@@ -496,7 +494,7 @@ class OGSClient:
         """Get all sent challenges.
         
         Returns:
-            dict: JSON response from the endpoint
+            challenges (dict): JSON response from the endpoint
         """
         endpoint = '/me/challenges'
         sent_challenges = []
@@ -513,7 +511,7 @@ class OGSClient:
             challenge_id (str): ID of the challenge to accept.
             
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = f'/me/challenges/{challenge_id}/accept'
@@ -526,7 +524,7 @@ class OGSClient:
             challenge_id (str): ID of the challenge to decline.
         
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = f'/me/challenges/{challenge_id}/'
@@ -539,7 +537,7 @@ class OGSClient:
             challenge_id (str): ID of the challenge to get details of.
             
         Returns:
-            dict: JSON response from the endpoint
+            response (dict): JSON response from the endpoint
         """
 
         endpoint = f'/me/challenges/{challenge_id}'
@@ -835,7 +833,7 @@ class OGSGame:
         """Return the game as a dict
         
         Returns:
-            dict: The game as a dict
+            data (dict): The game as a dict
         """
 
         return {
@@ -1002,7 +1000,7 @@ class OGSSocket:
             game_id (int): The id of the game to connect to
             
         Returns:
-            OGSGame: The game object
+            OGSGame (OGSGame): The game object
         """
 
         self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
