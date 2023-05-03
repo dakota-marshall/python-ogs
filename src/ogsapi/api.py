@@ -919,7 +919,7 @@ class OGSSocket:
                     - error
             callback (Callable): Callback function to register.   
         """
-        self.callback_func[event] = callback
+        self.client_callbacks[event] = callback
 
     # Listens to events received from the socket via the decorators, and calls the appropriate function
     def socket_callbacks(self):
