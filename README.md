@@ -9,6 +9,8 @@ An API wrapper written in python for the Online-Go Server's (OGS) REST API and R
 
 **THIS IS STILL HEAVILY IN DEVELOPMENT. VERY MUCH NOT READY FOR USE**
 
+Read the documentation here for more info: https://ogs-python.dakotamarshall.net/
+
 ## Install
 
 ### Pip Package
@@ -127,15 +129,15 @@ Current checklist of API calls / events that are implemented
 - [ ] Realtime API Game Events
   - [ ] Server to Client
     - [ ] auto_resign
-    - [ ] chat
+    - [ ] chat (This is for chat rooms, low priority)
     - [ ] chat/remove
     - [ ] clear_auto_resign
     - [x] clock
     - [ ] conditional_moves
-    - [ ] error
+    - [x] error
     - [x] gamedata
     - [x] latency
-    - [ ] phase
+    - [x] phase
     - [ ] removed_stones
     - [ ] removed_stones_accepted
     - [ ] reset
@@ -166,6 +168,6 @@ Current checklist of API calls / events that are implemented
     - [x] undo/accept
     - [ ] undo/cancel
     - [ ] undo/request
-- [ ] Implement proper challenge creation
-- [ ] Create open challenge
+- [x] Implement proper challenge creation
+- [x] Create open challenge
 - [ ] Handle accepting / rejecting counting

@@ -9,6 +9,13 @@ password=""
 # Basic example class for handling the game object received from the wrapper
 # This doesnt have to be a class, but because of the callback function requirement,
 # its easier to manage multiple games this way.
+
+def ogs_error_handler(data: dict):
+  print(f"OGS Error from API: {data}")
+
+def ogs_notification_handler(data: dict):
+  print(f"OGS Notification from API: {data}")
+
 class Game:
 
   def __init__(self, game_id: int, ogs: callable):
@@ -45,6 +52,10 @@ ogs = OGSClient(
 # Still need to connect to chat and notifications manually
 ogs.sock.notification_connect()
 ogs.sock.chat_connect()
+
+# Register socket level callbacks
+ogs.sock.register_callback('notification', ogs_notification_handler)
+ogs.sock.register_callback('error', ogs_error_handler)
 
 # Instantiate the example Game class and pass it the game_id and ogs object
 game_id = 12345678
