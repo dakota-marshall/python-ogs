@@ -792,6 +792,7 @@ class OGSSocket:
         last_issued_ping (int): The last time a ping was issued
         games (dict): A dict of connected game objects
         bearer_token (str): The bearer token used for authentication
+        client_callbacks (dict): A dict of socket level callbacks
         auth_data (dict): The auth data returned from the OGS API
         user_data (dict): The user data returned from the OGS API
         socket (socketio.Client): The socketio client object
@@ -887,7 +888,6 @@ class OGSSocket:
         @self.socket.on('ERROR')
         def on_error(data):
             """Called when an error is received from the server"""
-            #TODO: Decide whether or not this needs to be a callback
             print(f"Got error: {data}")
             try:
                 self.client_callbacks['error'](data)
