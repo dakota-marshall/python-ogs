@@ -1,0 +1,37 @@
+{
+  "initialized": false,
+  "min_ranking": 7,
+  "max_ranking": 18,
+  "challenger_color": "white",
+  "rengo_auto_start": 0,
+  "game": {
+    "name": "Friendly Game",
+    "rules": "japanese",
+    "ranked": false,
+    "width": 19,
+    "height": 19,
+    "handicap": "3",
+    "komi_auto": "automatic",
+    "komi": null,
+    "disable_analysis": false,
+    "initial_state": null,
+    "private": true,
+    "rengo": false,
+    "rengo_casual_mode": true,
+    "time_control": "byoyomi",
+    "time_control_parameters": {
+      "system": "byoyomi",
+      "speed": "live",
+      "main_time": 2400,
+      "period_time": 30,
+      "periods": 5,
+      "periods_min": 1,
+      "periods_max": 300,
+      "pause_on_weekends": false,
+      "time_control": "byoyomi"
+    },
+    "pause_on_weekends": false
+  },
+  "aga_ranked": false,
+  "invite_only": true
+}

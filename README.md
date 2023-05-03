@@ -129,7 +129,7 @@ Current checklist of API calls / events that are implemented
 - [ ] Realtime API Game Events
   - [ ] Server to Client
     - [ ] auto_resign
-    - [ ] chat
+    - [ ] chat (This is for chat rooms, low priority)
     - [ ] chat/remove
     - [ ] clear_auto_resign
     - [x] clock
@@ -168,6 +168,6 @@ Current checklist of API calls / events that are implemented
     - [x] undo/accept
     - [ ] undo/cancel
     - [ ] undo/request
-- [ ] Implement proper challenge creation
+- [x] Implement proper challenge creation
 - [ ] Create open challenge
 - [ ] Handle accepting / rejecting counting

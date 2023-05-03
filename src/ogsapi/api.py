@@ -339,57 +339,130 @@ class OGSClient:
         return self.get_rest_endpoint(endpoint=endpoint, params={'username' : encoded_name})['results'][0]
 
     # TODO: Need to make these customizable 
-    def challenge_player(self, player_username):
-        """Challenge a player to a game. WIP
+    def create_challenge(self, player_username: str = None, **game_settings):
+        """Create either an open challenge or a challenge to a specific player.
+        The time control settings are built depending on which time control is used.
+        Make sure that you pass the correct time control settings for the time control you want to use.
+        The other time control settings will be ignored.
         
         Args:
-            player_username (str): Username of the player to challenge.
+            player_username (str): Username of the player to challenge. 
+                If used will issue the challenge to the player. Defaults to None.
+        
+        Keyword Args:
+            min_rank (int): Minimum rank of the player to challenge. Defaults to 7.
+            max_rank (int): Maximum rank of the player to challenge. Defaults to 18.
+            challenger_color (str): Color of the challenger. Defaults to 'white'.
+            aga_ranked (bool): Whether or not the game is AGA ranked. Defaults to False.
+            invite_only (bool): Whether or not the game is invite only. Defaults to False.  
+            game_name (str): Name of the game. Defaults to 'Friendly Game'.
+            game_rules (str): Rules of the game. Defaults to 'japanese'.
+            game_ranked (bool): Whether or not the game is ranked. Defaults to False.
+            game_width (int): Width of the board. Defaults to 19.
+            game_height (int): Height of the board. Defaults to 19.
+            game_handicap (int): Handicap of the game. Defaults to 0.
+            game_komi_auto (bool): Whether or not to use automatic komi. Defaults to True.
+            game_komi (float): Komi of the game. Defaults to 6.5.
+                Not needed if using auto komi.            
+            game_disable_analysis (bool): Whether or not to disable analysis. Defaults to False.
+            game_initial_state (str): Initial state of the game. Defaults to None.   
+            game_private (bool): Whether or not the game is private. Defaults to False.
+            game_time_control (str): Time control of the game. Defaults to 'byoyomi'.
+            byoyomi_main_time (int): Main time of the game in seconds. Defaults to 2400.
+                only used if byoyomi time control is used.
+            byoyomi_period_time (int): Period time of the game in seconds. Defaults to 30.
+                only used if byoyomi time control is used.
+            byoyomi_periods (int): Number of periods in the game. Defaults to 5.
+                only used if byoyomi time control is used.
+            byoyomi_periods_min (int): Minimum periods of the game. Defaults to 5.
+                only used if byoyomi time control is used.
+            byoyomi_periods_max (int): Maximum periods of the game. Defaults to 5.
+                only used if byoyomi time control is used.
+            fisher_time_initial_time (int): Initial time of the game in seconds. Defaults to 900.
+                only used if fisher time control is used.
+            fisher_time_increment (int): Increment of the game in seconds. Defaults to 0.
+                only used if fisher time control is used.
+            fisher_time_max_time (int): Maximum time of the game in seconds. Defaults to 1800.
+                only used if fisher time control is used.       
             
         Returns:
-            dict: JSON response from the endpoint
+            challenge_id (int): ID of the challenge created
+            game_id (int): ID of the game created
         """
+        time_control = game_settings.get('time_control', 'byoyomi')
+        # Set common parameters
+        time_control_parameters['speed'] = game_settings.get('speed', 'correspondence')
+        time_control_parameters['pause_on_weekends'] = game_settings.get('pause_on_weekends', False)
+        time_control_parameters['time_control'] = time_control
 
-        game_settings = {
-            "initialized": False,
-            "min_ranking": -1000,
-            "max_ranking": 1000,
-            "challenger_color": "black",
-            "game": {
-                "name": "test",
-                "rules": "japanese",
-                "ranked":False,
-                "width":9,
-                "height":9,
-                "handicap": "0",
-                "komi_auto": "custom",
-                "komi":0,
-                "disable_analysis":False,
-                "initial_state": None,
-                "private": False,
-                "time_control": "byoyomi",
-                "time_control_parameters": {
-                    "system": "byoyomi",
-                    "speed": "60000",
-                    "total_time":60000,
-                    "initial_time":60000,
-                    "time_increment":60000,
-                    "max_time":60000,
-                    "main_time":660000,
-                    "period_time":60000,
-                    "periods":60000,
-                    "per_move":60000,
-                    "stones_per_period":10,
-                    "pause_on_weekends": False,
-                    "time_control": "byoyomi"
-                },
-                "pause_on_weekends": False
+        # Create time control paramters depending on time control used
+        match time_control:
+            case 'byoyomi':
+                time_control_parameters = {
+                    'system' : 'byoyomi',
+                    'main_time' : game_settings.get('byoyomi_main_time', 2400),
+                    'period_time' : game_settings.get('byoyomi_period_time', 30),
+                    'periods' : game_settings.get('byoyomi_periods', 5),
+                    'periods_min' : game_settings.get('byoyomi_periods_min', 1),
+                    'periods_max' : game_settings.get('byoyomi_periods_max', 300),
+
+                }
+            case 'fischer':
+                time_control_parameters = {
+                    'system' : 'fischer',
+                    'initial_time' : game_settings.get('fischer_initial_time', 2400),
+                    'time_increment' : game_settings.get('fischer_time_increment', 30),
+                    'max_time' : game_settings.get('fischer_max_time', 300),
+                }
+            case 'canadian':
+                # TODO: Implement
+                time_control_parameters = {}
+            case 'absolute':
+                # TODO: Implement
+                time_control_parameters = {}
+            case 'none':
+                time_control_parameters = {
+                    'system' : 'none',
+                    'speed' : 'correspondence',
+                    'time_control' : 'none',
+                    'pause_on_weekends' : False
+                }
+
+        # Create challenge from kwargs
+        challenge = {
+            'initialized' : False,
+            'min_ranking' : game_settings.get('min_ranking', 7),
+            'max_ranking' : game_settings.get('max_ranking', 18),
+            'challenger_color' : game_settings.get('challenger_color', 'white'),
+            'game' : {
+                'name' : game_settings.get('game_name', 'Friendly Game'),
+                'rules' : game_settings.get('game_rules', 'japanese'),
+                'ranked' : game_settings.get('game_ranked', False),
+                'width' : game_settings.get('game_width', 19),
+                'height' : game_settings.get('game_height', 19),
+                'handicap' : game_settings.get('game_handicap', '0'),
+                'komi_auto' : game_settings.get('game_komi_auto', True),
+                'komi' : game_settings.get('game_komi', '6.5'),
+                'disable_analysis' : game_settings.get('game_disable_analysis', False),
+                'initial_state' : game_settings.get('game_initial_state', None),
+                'private' : game_settings.get('game_private', False),
+                'time_control' : time_control,
+                'time_control_parameters' : time_control_parameters
             },
-            "aga_ranked": False
+            'aga_ranked' : game_settings.get('aga_ranked', False),
+            'invite_only' : game_settings.get('invite_only', False),
         }
-        player_id = self.get_player(player_username)['id']
-        print(f"Challenging player: {player_username} - {player_id}")
-        endpoint = f'/players/{player_id}/challenge/'
-        response = self.post_rest_endpoint(endpoint, game_settings)
+
+        if player_username is not None:
+            player_id = self.get_player(player_username)['id']
+            print(f"Challenging player: {player_username} - {player_id}")
+            endpoint = f'/players/{player_id}/challenge/'
+            response = self.post_rest_endpoint(endpoint, game_settings)
+        else:
+            endpoint = '/challenges/'
+            print("Creating open challenge")
+            response = self.post_rest_endpoint(endpoint, game_settings)
+
         challenge_id = response['challenge']
         game_id = response['game']
         return challenge_id, game_id
