@@ -35,7 +35,7 @@ pip3 install -r requirements.txt
 ## Usage
 
 ```python
-from ogsapi.api import OGSClient
+from ogsapi.client import OGSClient
 
 ogs = OGSClient('your_client_id', 'your_client_secret', 'your_username', 'your_password')
 ```
