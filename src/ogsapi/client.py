@@ -14,7 +14,7 @@ class OGSClient:
     """Connect to and interact with the OGS REST API and SocketIO API.
 
     Examples:
-        >>> from src.ogsapi.api import OGSClient
+        >>> from ogsapi.client import OGSClient
         >>> ogs = OGSClient(
             client_id=client_id, 
             client_secret=client_secret, 
