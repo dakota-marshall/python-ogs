@@ -1,10 +1,10 @@
-from src.ogsapi.api import OGSClient
+from ogsapi.client import OGSClient
 
 # Prep variables
-client_id="cJUDckOqlUHYC8QUjWaOjpfGlPsH5mpHcqvy5iQP"
-client_secret="pbkdf2_sha256$320000$UZ6UkBYDCQNtRKulHoBl3y$d1LKpIJE1ruq9iQlrmkjcQdlBQJlznamyhIx8Vy4My4="
+client_id=""
+client_secret=""
 username="Bone-A Lisa"
-password="LMPdGb$3g&Tc#hLvGWg!4Q2p"
+password=""
 
 # Basic example class for handling the game object received from the wrapper
 # This doesnt have to be a class, but because of the callback function requirement,
