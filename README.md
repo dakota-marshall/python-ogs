@@ -35,7 +35,7 @@ pip3 install -r requirements.txt
 ## Usage
 
 ```python
-from ogsapi.api import OGSClient
+from ogsapi.client import OGSClient
 
 ogs = OGSClient('your_client_id', 'your_client_secret', 'your_username', 'your_password')
 ```
@@ -147,8 +147,8 @@ Current checklist of API calls / events that are implemented
     - [x] undo_requested
   - Client to Server
     - [ ] annul
-    - [ ] cancel
-    - [ ] chat
+    - [x] cancel
+    - [x] chat
     - [ ] chat/remove
     - [ ] clear_delayed_resign
     - [ ] conditional_moves/set
@@ -158,16 +158,16 @@ Current checklist of API calls / events that are implemented
     - [ ] latency
     - [ ] log
     - [x] move
-    - [ ] pause
+    - [x] pause
     - [ ] removed_stones/accept
     - [ ] removed_stones/reject
     - [ ] removed_stones/set
     - [x] resign
-    - [ ] resume
+    - [x] resume
     - [ ] timed_out
     - [x] undo/accept
-    - [ ] undo/cancel
-    - [ ] undo/request
+    - [x] undo/cancel
+    - [x] undo/request
 - [x] Implement proper challenge creation
 - [x] Create open challenge
 - [ ] Handle accepting / rejecting counting

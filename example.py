@@ -1,9 +1,9 @@
-from src.ogsapi.api import OGSClient
+from ogsapi.client import OGSClient
 
 # Prep variables
 client_id=""
 client_secret=""
-username=""
+username="Bone-A Lisa"
 password=""
 
 # Basic example class for handling the game object received from the wrapper
@@ -17,7 +17,6 @@ def ogs_notification_handler(data: dict):
   print(f"OGS Notification from API: {data}")
 
 class Game:
-
   def __init__(self, game_id: int, ogs: callable):
     self.game_id = game_id
     self.ogs = ogs
@@ -26,6 +25,10 @@ class Game:
     # Register our callback function `on_move`
     self.game.register_callback('on_move', self.on_move)
     self.game.register_callback('on_clock', self.on_clock)
+    self.game.register_callback('on_phase_change', self.on_phase_change)
+    self.game.register_callback('on_undo_requested', self.on_undo_requested)
+    self.game.register_callback('on_undo_accepted', self.on_undo_accepted)
+    self.game.register_callback('on_undo_canceled', self.on_undo_canceled)
 
   def on_move(self, data: dict):
     print(f"Received move from the API: {data}")
@@ -33,6 +36,22 @@ class Game:
   def on_clock(self, data: dict):
     print(f"Received clock from the API: {data}")
     self.clock = data
+  
+  def on_phase_change(self, data: dict):
+    print(f"Received phase change from the API: {data}")
+    self.phase = data
+
+  def on_undo_requested(self, data: dict):
+    print(f"Received undo request from the API: {data}")
+    self.undo_requested = data
+  
+  def on_undo_accepted(self, data: dict):
+    print(f"Received undo accepted from the API: {data}")
+    self.undo_accepted = data
+
+  def on_undo_canceled(self, data: dict):
+    print(f"Received undo canceled from the API: {data}")
+    self.undo_canceled = data   
 
   def move(self, move: str):
     self.game.move(move)
