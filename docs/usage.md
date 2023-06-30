@@ -21,7 +21,7 @@ python3 -m pip install ogsapi
 Now, we can import the module and create an instance of the OGSClient class:
 
 ```python
-from ogsapi.api import OGSClient
+from ogsapi.client import OGSClient
 
 ogs = OGSClient('your_client_id', 'your_client_secret', 'your_username', 'your_password')
 ```
