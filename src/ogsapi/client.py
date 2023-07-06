@@ -1,14 +1,11 @@
 import requests
-from ogssocket import OGSSocket
+from .ogssocket import OGSSocket
+from .ogs_api_exception import OGSApiException
 
 
 # TODO: This will eventually need to be moved to `termination-api` instead of `/api/v1/`
 # TODO: Should probably implement a user class that contains all user info and functions
 # TODO: Break REST API functions into their own class, leaving the OGSClient class to be the interface for the user client
-
-class OGSApiException(Exception):
-    """Exception raised for errors in the OGS API."""
-    pass
 
 class OGSClient:
     """Connect to and interact with the OGS REST API and SocketIO API.
