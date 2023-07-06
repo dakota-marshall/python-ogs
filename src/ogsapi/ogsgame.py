@@ -1,4 +1,4 @@
-from ogsapi.client import OGSApiException
+from .ogs_api_exception import OGSApiException
 from typing import Callable
 
 class OGSGame:
