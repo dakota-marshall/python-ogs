@@ -1,6 +1,6 @@
 import unittest
 import os
-from ogsapi.client import OGSClient
+from src.ogsapi.client import OGSClient
 
 class TestOGSClient(unittest.TestCase):
 
