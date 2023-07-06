@@ -7,6 +7,7 @@ test:
     stage: test
     script:
         - pip3 install --upgrade pytest
+        - pip3 install --upgrade -r requirements.txt
         - python3 -m pytest src/tests/test.py --junitxml=report.xml
     artifacts:
         when: always
