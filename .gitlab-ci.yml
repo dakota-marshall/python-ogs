@@ -1,5 +1,18 @@
 stages:
+    - test
     - build
+
+test:
+    image: python:3
+    stage: test
+    script:
+        - pip3 install --upgrade pytest
+        - python3 -m pytest src/tests/test.py
+    artifacts:
+        when: always
+        reports:
+            junit: report.xml
+        expire_in: 2 weeks    
 
 package:
     image: python:3
