@@ -6,8 +6,8 @@ test:
     image: python:3
     stage: test
     script:
-        - pip3 install --upgrade pytest --junitxml=report.xml
-        - python3 -m pytest src/tests/test.py
+        - pip3 install --upgrade pytest
+        - python3 -m pytest src/tests/test.py --junitxml=report.xml
     artifacts:
         when: always
         reports:
