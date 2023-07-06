@@ -1,5 +1,9 @@
+stages:
+    - build
+
 package:
     image: python:3
+    stage: build
     script:
         - pip3 install --upgrade build twine
         - python -m build
@@ -12,6 +16,7 @@ package:
             - requirements.txt
 pages:
     image: python:3
+    stage: build
     variables:
         GIT_DEPTH: 1000
     script:
