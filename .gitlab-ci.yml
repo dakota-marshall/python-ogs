@@ -24,7 +24,7 @@ package:
         - python3 -m twine upload dist/*
     rules:
         - if: '$CI_COMMIT_BRANCH == "prod"'
-        - changes:
+          changes:
             - src/*
             - pyproject.toml
             - requirements.txt
