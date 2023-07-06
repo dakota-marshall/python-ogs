@@ -1,9 +1,9 @@
 import socketio
 import requests
 from typing import Callable
-from ogsapi.client import OGSApiException
+from .ogs_api_exception import OGSApiException
 from time import sleep, time
-from ogsgame import OGSGame
+from .ogsgame import OGSGame
 
 class OGSSocket:
     """OGS Socket Class for handling SocketIO connections to OGS
