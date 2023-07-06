@@ -61,6 +61,11 @@ class OGSClient:
         self.sock = OGSSocket(self.access_token)
         self.sock.connect()
 
+    def __del__(self):
+        # Disconnect the OGSSocket instance if it exists
+        if hasattr(self, 'sock') and self.sock is not None:
+            self.sock.disconnect()
+
     # TODO: All these internal functions should be moved into private functions
     def authenticate(self):
         """Authenticate with the OGS API and save the access token and user ID."""

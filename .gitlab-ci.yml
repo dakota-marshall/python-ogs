@@ -1,13 +1,36 @@
+stages:
+    - test
+    - build
+
+test:
+    image: python:3
+    stage: test
+    script:
+        - pip3 install --upgrade pytest
+        - pip3 install --upgrade -r requirements.txt
+        - python3 -m pytest src/tests/test.py --junitxml=report.xml
+    artifacts:
+        when: always
+        reports:
+            junit: report.xml
+        expire_in: 2 weeks    
+
 package:
     image: python:3
+    stage: build
     script:
         - pip3 install --upgrade build twine
         - python -m build
         - python3 -m twine upload dist/*
     rules:
         - if: '$CI_COMMIT_BRANCH == "prod"'
+          changes:
+            - src/*
+            - pyproject.toml
+            - requirements.txt
 pages:
     image: python:3
+    stage: build
     variables:
         GIT_DEPTH: 1000
     script:
