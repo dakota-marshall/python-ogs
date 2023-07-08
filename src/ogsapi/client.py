@@ -484,7 +484,7 @@ class OGSClient:
 
         endpoint = '/me/challenges/'
         received_challenges = []
-        all_challenges = self.get_rest_endpoint(endpoint)['results']
+        all_challenges = self.get_rest_endpoint(endpoint).json()['results']
         for challenge in all_challenges:
             if challenge['challenger']['id'] != self.user_id:
                 received_challenges.append(challenge)
