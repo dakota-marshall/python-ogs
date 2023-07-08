@@ -546,4 +546,28 @@ class OGSClient:
 
     def game_details(self, game_id):
         endpoint = f'/games/{game_id}'
-        return self.get_rest_endpoint(endpoint)
+        return self.get_rest_endpoint(endpoint).json()
+
+    def game_png(self, game_id):
+        """Get PNG of a game.
+        
+        Args:
+            game_id (str): ID of the game to get PNG of.
+        
+        Returns:
+            response (bytes): PNG image of the game
+        """
+        endpoint = f'/games/{game_id}/png'
+        return self.get_rest_endpoint(endpoint).content
+
+    def game_sgf(self, game_id):
+        """Get SGF of a game.
+        
+        Args:  
+            game_id (str): ID of the game to get SGF of.
+        
+        Returns:
+            response (str): SGF of the game
+        """
+        endpoint = f'/games/{game_id}/sgf'
+        return self.get_rest_endpoint(endpoint).text
