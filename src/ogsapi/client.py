@@ -545,6 +545,14 @@ class OGSClient:
         return self.get_rest_endpoint(endpoint=endpoint).json()
 
     def game_details(self, game_id):
+        """Get details of a game.
+        
+        Args:
+            game_id (str): ID of the game to get details of.
+            
+        Returns:
+            response (dict): JSON response from the endpoint
+        """
         endpoint = f'/games/{game_id}'
         return self.get_rest_endpoint(endpoint).json()
 
