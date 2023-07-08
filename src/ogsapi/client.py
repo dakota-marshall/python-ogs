@@ -555,6 +555,18 @@ class OGSClient:
         """
         endpoint = f'/games/{game_id}'
         return self.get_rest_endpoint(endpoint).json()
+    
+    def game_reviews(self, game_id):
+        """Get reviews of a game.
+        
+        Args:
+            game_id (str): ID of the game to get reviews of.
+            
+        Returns:
+            response (dict): JSON response from the endpoint
+        """
+        endpoint = f'/games/{game_id}/reviews'
+        return self.get_rest_endpoint(endpoint).json()
 
     def game_png(self, game_id):
         """Get PNG of a game.
