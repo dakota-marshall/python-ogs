@@ -99,7 +99,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
             
         Returns:
-            response (dict): JSON response from the endpoint
+            response (Callable): Returns the request response
         """
 
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
@@ -112,7 +112,8 @@ class OGSClient:
             raise OGSApiException("GET Failed") from e
 
         if 299 >= response.status_code >= 200:
-            return response.json()
+            # TODO: We should probably handle the data type here, and return a json object, bytes, etc
+            return response
         else:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
@@ -125,7 +126,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
         
         Returns:
-            response (dict): JSON response from the endpoint
+            response (Callable): JSON response from the endpoint
         """
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
         headers = {
@@ -138,7 +139,7 @@ class OGSClient:
             raise OGSApiException("POST Failed") from e
 
         if 299 >= response.status_code >= 200:
-            return response.json()
+            return response
         else:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
@@ -151,7 +152,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
             
         Returns:
-            response (dict): JSON response from the endpoint
+            response (Callable): JSON response from the endpoint
         """
 
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
@@ -165,7 +166,7 @@ class OGSClient:
             raise OGSApiException("PUT Failed") from e
 
         if 299 >= response.status_code >= 200:
-            return response.json()
+            return response
         else:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
@@ -178,7 +179,7 @@ class OGSClient:
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
         
         Returns:
-            response (dict): JSON response from the endpoint
+            response (Callable): JSON response from the endpoint
         """
 
         url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
@@ -192,7 +193,7 @@ class OGSClient:
             raise OGSApiException("DELETE Failed") from e
 
         if 299 >= response.status_code >= 200:
-            return response.json()
+            return response
         else:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
@@ -206,7 +207,7 @@ class OGSClient:
         """
 
         endpoint = '/me'
-        return self.get_rest_endpoint(endpoint)
+        return self.get_rest_endpoint(endpoint).json()
     
     def user_settings(self):
         """Get the user's settings.
@@ -216,7 +217,7 @@ class OGSClient:
         """
 
         endpoint = '/me/settings/'
-        return self.get_rest_endpoint(endpoint=endpoint)
+        return self.get_rest_endpoint(endpoint=endpoint).json()
     
     def update_user_settings(
             self, username: str = None, 
@@ -261,7 +262,7 @@ class OGSClient:
 
         endpoint = f'/players/{self.user_id}'
         # Add the inputs to a payload, only if they are not None
-        return self.put_rest_endpoint(endpoint=endpoint, payload=payload)
+        return self.put_rest_endpoint(endpoint=endpoint, payload=payload).json()
 
     def user_games(self):
         """Get the user's games.
@@ -271,7 +272,7 @@ class OGSClient:
         """
 
         endpoint = '/me/games'
-        return self.get_rest_endpoint(endpoint)
+        return self.get_rest_endpoint(endpoint).json()
 
     def user_friends(self, username: str = None):
         """Get the user's friends.
@@ -284,7 +285,7 @@ class OGSClient:
         """
 
         endpoint = '/me/friends'
-        return self.get_rest_endpoint(endpoint=endpoint, params={'username' : username})
+        return self.get_rest_endpoint(endpoint=endpoint, params={'username' : username}).json()
 
     def send_friend_request(self, username: str):
         """Send a friend request to a user.
@@ -301,7 +302,7 @@ class OGSClient:
         payload = {
             "player_id" : player_id
         }
-        return self.post_rest_endpoint(endpoint=endpoint, payload=payload)
+        return self.post_rest_endpoint(endpoint=endpoint, payload=payload).json()
 
     def remove_friend(self, username: str):
         """Remove a friend.
@@ -319,7 +320,7 @@ class OGSClient:
             "delete": True,
             "player_id" : player_id
         }
-        return self.post_rest_endpoint(endpoint=endpoint, payload=payload)
+        return self.post_rest_endpoint(endpoint=endpoint, payload=payload).json()
 
     # Players: /players
 
@@ -334,7 +335,7 @@ class OGSClient:
         """
 
         endpoint = f'/players/'
-        return self.get_rest_endpoint(endpoint=endpoint, params={'username' : player_username})['results'][0]
+        return self.get_rest_endpoint(endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
 
     # TODO: Need to make these customizable 
     def create_challenge(self, player_username: str = None, **game_settings):
@@ -461,11 +462,11 @@ class OGSClient:
             player_id = self.get_player(player_username)['id']
             print(f"Challenging player: {player_username} - {player_id}")
             endpoint = f'/players/{player_id}/challenge/'
-            response = self.post_rest_endpoint(endpoint, challenge)
+            response = self.post_rest_endpoint(endpoint, challenge).json()
         else:
             endpoint = '/challenges/'
             print("Creating open challenge")
-            response = self.post_rest_endpoint(endpoint, challenge)
+            response = self.post_rest_endpoint(endpoint, challenge).json()
 
         challenge_id = response['challenge']
         game_id = response['game']
@@ -498,7 +499,7 @@ class OGSClient:
         """
         endpoint = '/me/challenges'
         sent_challenges = []
-        all_challenges = self.get_rest_endpoint(endpoint)['results']
+        all_challenges = self.get_rest_endpoint(endpoint).json()['results']
         for challenge in all_challenges:
             if challenge['challenger']['id'] == self.user_id:
                 sent_challenges.append(challenge)
@@ -515,7 +516,7 @@ class OGSClient:
         """
 
         endpoint = f'/me/challenges/{challenge_id}/accept'
-        return self.post_rest_endpoint(endpoint=endpoint,payload={})
+        return self.post_rest_endpoint(endpoint=endpoint,payload={}).json()
     
     def decline_challenge(self, challenge_id):
         """Decline a challenge.
@@ -528,7 +529,7 @@ class OGSClient:
         """
 
         endpoint = f'/me/challenges/{challenge_id}/'
-        return self.delete_rest_endpoint(endpoint=endpoint, payload={})
+        return self.delete_rest_endpoint(endpoint=endpoint, payload={}).json()
 
     def challenge_details(self, challenge_id):
         """Get details of a challenge.
@@ -541,7 +542,7 @@ class OGSClient:
         """
 
         endpoint = f'/me/challenges/{challenge_id}'
-        return self.get_rest_endpoint(endpoint=endpoint)
+        return self.get_rest_endpoint(endpoint=endpoint).json()
 
     def game_details(self, game_id):
         endpoint = f'/games/{game_id}'
