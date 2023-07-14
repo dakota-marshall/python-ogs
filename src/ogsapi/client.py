@@ -1,5 +1,3 @@
-import requests
-
 from .ogscredentials import OGSCredentials
 from .ogssocket import OGSSocket
 from .ogsrestapi import OGSRestAPI
