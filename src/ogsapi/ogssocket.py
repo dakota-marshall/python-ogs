@@ -1,8 +1,8 @@
-import socketio
-import requests
 from typing import Callable
-from .ogs_api_exception import OGSApiException
 from time import sleep, time
+import socketio
+from .ogs_api_exception import OGSApiException
+from .ogscredentials import OGSCredentials
 from .ogsgame import OGSGame
 
 class OGSSocket:
@@ -17,7 +17,7 @@ class OGSSocket:
         clock_latency (float): The clock latency of the socket
         last_ping (int): The last ping time of the socket
         last_issued_ping (int): The last time a ping was issued
-        games (dict): A dict of connected game objects
+        games (dict[OGSGame]): A dict of connected game objects
         bearer_token (str): The bearer token used for authentication
         client_callbacks (dict): A dict of socket level callbacks
         auth_data (dict): The auth data returned from the OGS API
@@ -26,7 +26,7 @@ class OGSSocket:
         
     """
 
-    def __init__(self, bearer_token: str, debug: bool = False):
+    def __init__(self, credentials: OGSCredentials, debug: bool = False):
         # Clock Settings
         self.clock_drift = 0.0
         self.clock_latency = 0.0
@@ -34,20 +34,13 @@ class OGSSocket:
         self.last_issued_ping = 0
         # Dict of connected game objects
         self.games = {}
-        self.bearer_token = bearer_token
         # Socket level callbacks
         self.client_callbacks = {
             'notification': None,
             'error': None,
         }
+        self.credentials = credentials
         self.socket = socketio.Client(logger=debug, engineio_logger=False)
-        try:
-            self.auth_data = requests.get('https://online-go.com/api/v1/ui/config', headers={'Authorization': f'Bearer {bearer_token}'}).json()
-        except requests.exceptions.RequestException as e:
-            raise OGSApiException("Failed to get auth_data") from e
-        
-        # Grab user data as its own variable for ease of use
-        self.user_data = self.auth_data['user']
 
     def __del__(self):
         self.disconnect()
@@ -57,9 +50,9 @@ class OGSSocket:
         self.socket_callbacks()
         print("Connecting to Websocket")
         try:
-            self.socket.connect('https://online-go.com/socket.io/?EIO=4', transports='websocket', headers={"Authorization" : f"Bearer {self.bearer_token}"})
-        except:
-            raise OGSApiException("Failed to connect to OGS Websocket")
+            self.socket.connect('https://online-go.com/socket.io/?EIO=4', transports='websocket', headers={"Authorization" : f"Bearer {self.credentials.access_token}"})
+        except Exception as e:
+            raise OGSApiException("Failed to connect to OGS Websocket") from e
 
     def register_callback(self, event: str, callback: Callable):
         """Register a callback function for receiving data from the API.
@@ -72,7 +65,7 @@ class OGSSocket:
                     - error
             callback (Callable): Callback function to register.   
         """
-        self.client_callbacks[event] = callback
+        self.client_callbacks[event]: OGSGame = callback
 
     # Listens to events received from the socket via the decorators, and calls the appropriate function
     def socket_callbacks(self):
@@ -82,7 +75,7 @@ class OGSSocket:
         def authenticate():
             """Authenticate to the socket"""
             print("Connected to socket, authenticating")
-            self.socket.emit(event="authenticate", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username'], "jwt": self.auth_data['user_jwt']})
+            self.socket.emit(event="authenticate", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.user_id, "username": self.credentials.username, "jwt": self.credentials.user_jwt})
             sleep(1)
         
         @self.socket.on('hostinfo')
@@ -137,11 +130,11 @@ class OGSSocket:
     
     def notification_connect(self):
         """Connect to the notification socket"""
-        self.socket.emit(event="notification/connect", data={"auth": self.auth_data['notification_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
+        self.socket.emit(event="notification/connect", data={"auth": self.credentials.notification_auth, "player_id": self.credentials.user_id, "username": self.credentials.username})
     
     def chat_connect(self):
         """Connect to the chat socket"""
-        self.socket.emit(event="chat/connect", data={"auth": self.auth_data['chat_auth'], "player_id": self.user_data['id'], "username": self.user_data['username']})
+        self.socket.emit(event="chat/connect", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.user_id, "username": self.credentials.username})
 
     def game_connect(self, game_id: int):
         """Connect to a game
@@ -153,7 +146,7 @@ class OGSSocket:
             OGSGame (OGSGame): The game object
         """
 
-        self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, auth_data=self.auth_data, user_data=self.user_data)
+        self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, credentials=self.credentials)
 
         return self.games[game_id]
 

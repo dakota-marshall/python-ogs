@@ -21,8 +21,8 @@ class TestOGSClient(unittest.TestCase):
 
     def test_authentication(self):
         self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
-        self.assertIsNotNone(self.client.access_token)
-        self.assertIsNotNone(self.client.refresh_token)
+        self.assertIsNotNone(self.client.credentials.access_token)
+        self.assertIsNotNone(self.client.credentials.refresh_token)
 
 if __name__ == '__main__':
     unittest.main()
