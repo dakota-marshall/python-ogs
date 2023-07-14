@@ -64,10 +64,17 @@ class OGSRestAPI:
         if method not in ['GET', 'POST', 'PUT', 'DELETE']:
             raise OGSApiException(f"Invalid HTTP Method, Got: {method}. Expected: GET, POST, PUT, DELETE")
 
-        try:
-            response = requests.request(method, url, headers=headers, params=params, payload=payload, timeout=20)
-        except requests.exceptions.RequestException as e:
-            raise OGSApiException(f"{method} Failed") from e
+        # Add payload if method is POST or PUT
+        if method in ['POST', 'PUT']:
+            try:
+                response = requests.request(method, url, headers=headers, params=params, payload=payload, timeout=20)
+            except requests.exceptions.RequestException as e:
+                raise OGSApiException(f"{method} Failed") from e
+        else:
+            try:
+                response = requests.request(method, url, headers=headers, params=params, timeout=20)
+            except requests.exceptions.RequestException as e:
+                raise OGSApiException(f"{method} Failed") from e
 
         if 299 >= response.status_code >= 200:
             return response
