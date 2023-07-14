@@ -47,7 +47,7 @@ class OGSClient:
     """
     def __init__(self, client_id, client_secret, username, password, debug: bool = False, dev: bool = False):
 
-        self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret, 
+        self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
         self.sock = OGSSocket(self.credentials.access_token, debug=debug)
@@ -367,7 +367,7 @@ class OGSClient:
             if challenge['challenger']['id'] == self.credentials.user_id:
                 sent_challenges.append(challenge)
         return sent_challenges
-    
+
     def accept_challenge(self, challenge_id):
         """Accept a challenge.
         
@@ -418,7 +418,7 @@ class OGSClient:
         """
         endpoint = f'/games/{game_id}'
         return self.api.call_rest_endpoint('GET', endpoint).json()
-    
+
     def game_reviews(self, game_id):
         """Get reviews of a game.
         

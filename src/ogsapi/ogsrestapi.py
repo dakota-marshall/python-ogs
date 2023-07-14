@@ -59,7 +59,7 @@ class OGSRestAPI:
         headers = {
             'Authorization' : f'Bearer {self.credentials.access_token}'
         }
-        
+
         # Bail if method is invalid
         if method not in ['GET', 'POST', 'PUT', 'DELETE']:
             raise OGSApiException(f"Invalid HTTP Method, Got: {method}. Expected: GET, POST, PUT, DELETE")
@@ -78,5 +78,5 @@ class OGSRestAPI:
 
         if 299 >= response.status_code >= 200:
             return response
-        else:
-            raise OGSApiException(f"{response.status_code}: {response.reason}")
+
+        raise OGSApiException(f"{response.status_code}: {response.reason}")

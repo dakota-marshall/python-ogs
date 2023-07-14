@@ -1,8 +1,8 @@
+from typing import Callable
+from time import sleep, time
 import socketio
 import requests
-from typing import Callable
 from .ogs_api_exception import OGSApiException
-from time import sleep, time
 from .ogsgame import OGSGame
 
 class OGSSocket:
