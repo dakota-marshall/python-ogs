@@ -17,7 +17,7 @@ class OGSSocket:
         clock_latency (float): The clock latency of the socket
         last_ping (int): The last ping time of the socket
         last_issued_ping (int): The last time a ping was issued
-        games (dict): A dict of connected game objects
+        games (dict[OGSGame]): A dict of connected game objects
         bearer_token (str): The bearer token used for authentication
         client_callbacks (dict): A dict of socket level callbacks
         auth_data (dict): The auth data returned from the OGS API
