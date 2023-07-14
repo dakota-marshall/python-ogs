@@ -247,7 +247,7 @@ class OGSGame:
     def connect(self):
         """Connect to the game"""
         print(f"Connecting to game {self.game_id}")
-        self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.credentials.player_id, 'chat': False})
+        self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.credentials.user_id, 'chat': False})
 
     def disconnect(self):
         """Disconnect from the game"""
@@ -275,7 +275,7 @@ class OGSGame:
         """
 
         print(f"Submitting move {move} to game {self.game_id}")
-        self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.player_id, 'game_id': self.game_id, 'move': move})
+        self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.user_id, 'game_id': self.game_id, 'move': move})
 
     def resign(self):
         """Resign the game"""
@@ -317,7 +317,7 @@ class OGSGame:
     def pass_turn(self):
         """Pass the turn in the game"""
         print(f'Submitting move pass to game {self.game_id}')
-        self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.player_id, 'game_id': self.game_id, 'move': '..'})
+        self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.user_id, 'game_id': self.game_id, 'move': '..'})
     
     def send_chat(self, message: str, chat_type: str, move: int):
         """Send a chat message to the game

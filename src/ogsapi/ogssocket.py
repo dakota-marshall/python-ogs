@@ -65,7 +65,7 @@ class OGSSocket:
                     - error
             callback (Callable): Callback function to register.   
         """
-        self.client_callbacks[event] = callback
+        self.client_callbacks[event]: OGSGame = callback
 
     # Listens to events received from the socket via the decorators, and calls the appropriate function
     def socket_callbacks(self):
@@ -75,7 +75,7 @@ class OGSSocket:
         def authenticate():
             """Authenticate to the socket"""
             print("Connected to socket, authenticating")
-            self.socket.emit(event="authenticate", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.player_id, "username": self.credentials.username, "jwt": self.credentials.user_jwt})
+            self.socket.emit(event="authenticate", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.user_id, "username": self.credentials.username, "jwt": self.credentials.user_jwt})
             sleep(1)
         
         @self.socket.on('hostinfo')
@@ -130,11 +130,11 @@ class OGSSocket:
     
     def notification_connect(self):
         """Connect to the notification socket"""
-        self.socket.emit(event="notification/connect", data={"auth": self.credentials.notification_auth, "player_id": self.credentials.player_id, "username": self.credentials.username})
+        self.socket.emit(event="notification/connect", data={"auth": self.credentials.notification_auth, "player_id": self.credentials.user_id, "username": self.credentials.username})
     
     def chat_connect(self):
         """Connect to the chat socket"""
-        self.socket.emit(event="chat/connect", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.player_id, "username": self.credentials.username})
+        self.socket.emit(event="chat/connect", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.user_id, "username": self.credentials.username})
 
     def game_connect(self, game_id: int):
         """Connect to a game
