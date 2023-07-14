@@ -8,14 +8,12 @@ class OGSGame:
     Args:
         game_socket (OGSSocket): OGSSocket object to connect to the game.
         game_id (str): ID of the game to connect to.
-        auth_data (dict): Authentication data for the game.
-        user_data (dict): User data for the game.
+        credentials (OGSCredentials): OGSCredentials object containing tokens for authentication to the Socket
         
     Attributes:
         socket (OGSSocket): OGSSocket object to connect to the game.
         game_id (str): ID of the game to connect to.
-        auth_data (dict): Authentication data for the game.
-        user_data (dict): User data for the game.
+        credentials (OGSCredentials): OGSCredentials object containing tokens for authentication to the Socket
         name (str): Name of the game.
         private (bool): Whether the game is private or not.
         white_player (dict): Dictionary containing information about the white player.

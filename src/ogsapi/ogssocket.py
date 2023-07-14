@@ -9,7 +9,7 @@ class OGSSocket:
     """OGS Socket Class for handling SocketIO connections to OGS
     
     Args:
-        bearer_token (str): The bearer token to use for authentication
+        credentials (OGSCredentials): OGSCredentials object containing tokens for authentication to the Socket
         debug (bool, optional): Enable debug logging. Defaults to False.
     
     Attributes:
@@ -18,10 +18,8 @@ class OGSSocket:
         last_ping (int): The last ping time of the socket
         last_issued_ping (int): The last time a ping was issued
         games (dict[OGSGame]): A dict of connected game objects
-        bearer_token (str): The bearer token used for authentication
         client_callbacks (dict): A dict of socket level callbacks
-        auth_data (dict): The auth data returned from the OGS API
-        user_data (dict): The user data returned from the OGS API
+        credentials (OGSCredentials): OGSCredentials object containing tokens for authentication to the Socket
         socket (socketio.Client): The socketio client object
         
     """
