@@ -3,7 +3,17 @@ from .ogscredentials import OGSCredentials
 from .ogs_api_exception import OGSApiException
 
 class OGSRestAPI:
-    """OGS Rest API Class for handling REST connections to OGS"""
+    """OGS Rest API Class for handling REST connections to OGS
+    
+    Args:
+        credentials (OGSCredentials): The credentials to use for authentication
+        dev (bool, optional): Whether to connect to beta OGS instance. Defaults to False.
+    
+    Attributes:
+        credentials (OGSCredentials): The credentials used for authentication
+        api_ver (str): The API version to use
+        base_url (str): The base URL to use for API calls
+    """
 
     def __init__(self, credentials: OGSCredentials, dev: bool = False):
 

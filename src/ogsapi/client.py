@@ -31,15 +31,8 @@ class OGSClient:
         debug (bool, optional): Enable debug logging. Defaults to False.        
 
     Attributes:
-        client_id (str): Client ID from OGS
-        client_secret (str): Client Secret from OGS
-        username (str): Username of OGS account
-        password (str): Password of OGS account
-        access_token (str): Access Token from OGS
-        refresh_token (str): Refresh Token from OGS
-        user_id (int): User ID from OGS
-        base_url (str): Base URL for OGS API
-        api_ver (str): API version for OGS API
+        credentials (OGSCredentials): Credentials object containing all credentials
+        api (OGSRestAPI): REST API connection to OGS
         sock (OGSSocket): SocketIO connection to OGS
 
     """
