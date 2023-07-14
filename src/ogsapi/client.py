@@ -50,7 +50,7 @@ class OGSClient:
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret, 
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
-        self.sock = OGSSocket(self.access_token)
+        self.sock = OGSSocket(self.credentials.access_token)
         self.sock.connect()
 
         self.credentials.user_id = self.user_vitals()
