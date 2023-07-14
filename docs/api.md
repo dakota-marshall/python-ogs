@@ -4,6 +4,10 @@
 
 ::: src.ogsapi.client
 
+::: src.ogsapi.ogsrestapi
+
 ::: src.ogsapi.ogsgame
 
 ::: src.ogsapi.ogssocket
+
+::: src.ogsapi.ogscredentials
