@@ -93,6 +93,7 @@ class OGSRestAPI:
         raise OGSApiException(f"{response.status_code}: {response.reason}")
 
     def get_auth_data(self):
+        """Get the auth data from the OGS API and save it to the credentials object for use in the socket connection."""
         auth_data = self.call_rest_endpoint('GET', '/ui/config').json()
         self.credentials.chat_auth = auth_data['chat_auth']
         self.credentials.user_jwt = auth_data['user_jwt']
