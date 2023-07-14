@@ -26,6 +26,7 @@ class OGSRestAPI:
 
         # TODO: Maybe implement some form of token caching
         self.authenticate()
+        self.get_auth_data()
 
     # TODO: All these internal functions should be moved into private functions
     def authenticate(self):
@@ -90,3 +91,8 @@ class OGSRestAPI:
             return response
 
         raise OGSApiException(f"{response.status_code}: {response.reason}")
+
+    def get_auth_data(self):
+        auth_data = self.call_rest_endpoint('GET', '/ui/config').json()
+        self.credentials.chat_auth = auth_data['chat_auth']
+        self.credentials.user_jwt = auth_data['user_jwt']

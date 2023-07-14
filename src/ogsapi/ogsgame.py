@@ -1,5 +1,7 @@
-from .ogs_api_exception import OGSApiException
 from typing import Callable
+from .ogs_api_exception import OGSApiException
+from .ogssocket import OGSSocket
+from .ogscredentials import OGSCredentials
 
 class OGSGame:
     """OGSGame class for handling games connected via the OGSSocket.
@@ -39,13 +41,12 @@ class OGSGame:
     # To receive data from the game, use the callback function to register functions to be called when data is received.
     # on_move and on_clock are required for the game to function properly, on_undo is only for handling undo requests
     
-    def __init__(self, game_socket, game_id, auth_data, user_data):
+    def __init__(self, game_socket: OGSSocket, credentials: OGSCredentials, game_id):
         self.socket = game_socket
         self.game_id = game_id
-        self.user_data = user_data
-        self.auth_data = auth_data
         # Define callback functions from the API
         self._game_call_backs()
+        self.credentials = credentials
         # Connect to the game
         self.connect()
 
@@ -247,7 +248,7 @@ class OGSGame:
     def connect(self):
         """Connect to the game"""
         print(f"Connecting to game {self.game_id}")
-        self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.user_data['id'], 'chat': False})
+        self.socket.emit(event="game/connect", data={'game_id': self.game_id, 'player_id': self.credentials.player_id, 'chat': False})
 
     def disconnect(self):
         """Disconnect from the game"""
@@ -275,17 +276,17 @@ class OGSGame:
         """
 
         print(f"Submitting move {move} to game {self.game_id}")
-        self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': move})
+        self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.player_id, 'game_id': self.game_id, 'move': move})
 
     def resign(self):
         """Resign the game"""
         print(f"Resigning game {self.game_id}")
-        self.socket.emit(event="game/resign", data={'auth': self.auth_data['chat_auth'], 'game_id': self.game_id})  
+        self.socket.emit(event="game/resign", data={'auth': self.credentials.chat_auth, 'game_id': self.game_id})  
     
     def cancel(self):
         """Cancel the game if within the first few moves"""
         print(f"Canceling game {self.game_id}")
-        self.socket.emit(event="game/cancel", data={'auth': self.auth_data['chat_auth'], 'game_id': self.game_id})
+        self.socket.emit(event="game/cancel", data={'auth': self.credentials.chat_auth, 'game_id': self.game_id})
 
     def undo(self, move: int):
         """Request an undo on the game
@@ -294,7 +295,7 @@ class OGSGame:
             move (int): The move number to accept the undo at.        
         """
         print(f"Requesting undo on game {self.game_id}")
-        self.socket.emit(event="game/undo/request", data={'auth': self.auth_data['chat_auth'], 'game_id': self.game_id, 'move_number': move})
+        self.socket.emit(event="game/undo/request", data={'auth': self.credentials.chat_auth, 'game_id': self.game_id, 'move_number': move})
 
     def cancel_undo(self, move: int):
         """Cancel an undo request on the game
@@ -303,7 +304,7 @@ class OGSGame:
             move (int): The move number to accept the undo at.        
         """
         print(f"Canceling undo on game {self.game_id}")
-        self.socket.emit(event="game/undo/cancel", data={'auth': self.auth_data['chat_auth'], 'game_id': self.game_id, 'move_number': move})
+        self.socket.emit(event="game/undo/cancel", data={'auth': self.credentials.chat_auth, 'game_id': self.game_id, 'move_number': move})
 
     def accept_undo(self, move: int):
         """Accept an undo request on the game
@@ -312,14 +313,14 @@ class OGSGame:
             move (int): The move number to accept the undo at.
         """
         print(f"Accepting undo on game {self.game_id}")
-        self.socket.emit(event="game/undo/accept", data={'auth': self.auth_data['chat_auth'], 'game_id': self.game_id, 'move_number': move})
+        self.socket.emit(event="game/undo/accept", data={'auth': self.credentials.chat_auth, 'game_id': self.game_id, 'move_number': move})
 
     def pass_turn(self):
         """Pass the turn in the game"""
         print(f'Submitting move pass to game {self.game_id}')
-        self.socket.emit(event="game/move", data={'auth': self.auth_data['chat_auth'], 'player_id': self.user_data['id'], 'game_id': self.game_id, 'move': '..'})
+        self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.player_id, 'game_id': self.game_id, 'move': '..'})
     
-    def send_chat(self, message: str, type: str, move: int):
+    def send_chat(self, message: str, chat_type: str, move: int):
         """Send a chat message to the game
         
         Args:
@@ -331,7 +332,7 @@ class OGSGame:
             >>> game.send_chat('Hello World', 'game')
         """
         print(f'Sending chat message to game {self.game_id}')
-        self.socket.emit(event="game/chat", data={'auth': self.auth_data['chat_auth'], 'game_id': self.game_id, 'body': message, 'type': type, 'move_number': move})
+        self.socket.emit(event="game/chat", data={'auth': self.credentials.chat_auth, 'game_id': self.game_id, 'body': message, 'type': chat_type, 'move_number': move})
 
     # Pass game attributes as a dict
     def asdict(self):
