@@ -1,6 +1,5 @@
 from typing import Callable
 from .ogs_api_exception import OGSApiException
-from .ogssocket import OGSSocket
 from .ogscredentials import OGSCredentials
 
 class OGSGame:
@@ -41,7 +40,7 @@ class OGSGame:
     # To receive data from the game, use the callback function to register functions to be called when data is received.
     # on_move and on_clock are required for the game to function properly, on_undo is only for handling undo requests
     
-    def __init__(self, game_socket: OGSSocket, credentials: OGSCredentials, game_id):
+    def __init__(self, game_socket: Callable, credentials: OGSCredentials, game_id):
         self.socket = game_socket
         self.game_id = game_id
         # Define callback functions from the API
