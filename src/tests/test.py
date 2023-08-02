@@ -26,7 +26,7 @@ class TestOGSClient(unittest.TestCase):
 
     def test_websocket(self):
         self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
-        self.client.socket_connect()
+        self.client.socket_connect(lambda event_name, data: None)
         self.client.socket_disconnect()
 
 if __name__ == '__main__':
