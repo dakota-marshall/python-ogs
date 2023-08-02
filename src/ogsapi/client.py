@@ -6,7 +6,6 @@ from .ogs_api_exception import OGSApiException
 
 # TODO: This will eventually need to be moved to `termination-api` instead of `/api/v1/`
 # TODO: Should probably implement a user class that contains all user info and functions
-# TODO: Break REST API functions into their own class, leaving the OGSClient class to be the interface for the user client
 
 class OGSClient:
     """Connect to and interact with the OGS REST API and SocketIO API.
@@ -28,7 +27,8 @@ class OGSClient:
         client_secret (str): Client Secret from OGS
         username (str): Username of OGS account
         password (str): Password of OGS account
-        debug (bool, optional): Enable debug logging. Defaults to False.        
+        debug (bool, optional): Enable debug logging. Defaults to False.
+        dev (bool, optional): Use the development API. Defaults to False.    
 
     Attributes:
         credentials (OGSCredentials): Credentials object containing all credentials
@@ -42,14 +42,7 @@ class OGSClient:
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
         self.sock = OGSSocket(self.credentials, debug=debug)
-        self.sock.connect()
-
         self.credentials.user_id = self.user_vitals()
-
-    def __del__(self):
-        # Disconnect the OGSSocket instance if it exists
-        if hasattr(self, 'sock') and self.sock is not None:
-            self.sock.disconnect()
 
     # User Specific Resources: /me
 
@@ -191,7 +184,7 @@ class OGSClient:
         endpoint = '/players/'
         return self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
 
-    # TODO: Need to make these customizable 
+    # TODO: This needs to be using a dataclass to make challenge customization easier
     def create_challenge(self, player_username: str = None, **game_settings):
         """Create either an open challenge or a challenge to a specific player.
         The time control settings are built depending on which time control is used.
@@ -445,3 +438,11 @@ class OGSClient:
         """
         endpoint = f'/games/{game_id}/sgf'
         return self.api.call_rest_endpoint('GET', endpoint).text
+
+    def socket_connect(self):
+        """Connect to the socket."""
+        self.sock.connect()
+
+    def socket_disconnect(self):
+        """Disconnect from the socket. You will need to do this before exiting your program, Or else it will hang and require a keyboard interrupt."""
+        self.sock.disconnect()
