@@ -1,12 +1,12 @@
 # How To Use This Module
 
-## What youll need
+## What you'll need
 
 - Python 3.7+
 - A client ID and secret from OGS
   - This can be created at [https://online-go.com/oauth2/applications/](https://online-go.com/oauth2/applications/) using the below parameters
 
-![OGS Application Exmaple](imgs/ogs-application.png)
+![OGS Application Example](imgs/ogs-application.png)
 
 ## Installation
 
@@ -16,7 +16,7 @@ Installation is easy enough, simply install the PyPI package:
 python3 -m pip install ogsapi
 ```
 
-## Setup
+## Connect to the REST API
 
 Now, we can import the module and create an instance of the OGSClient class:
 
@@ -25,9 +25,13 @@ from ogsapi.client import OGSClient
 
 ogs = OGSClient('your_client_id', 'your_client_secret', 'your_username', 'your_password')
 ```
-If you want debug logs, you can pass `debug=True` to the constructor. This will authenticate you to OGS using your API credentials, and connect you to the Realtime API Socket. 
+If you want debug logs, you can pass `debug=True` to the constructor. This will authenticate you to OGS using your API credentials, but does not connect to the Realtime API.
 
-Next, we should create and pass our callback functions for the socket level callbacks.
+From here, you should be able to call of the REST API related methods.
+
+## Connect to the Realtime API
+
+First, we need to create two callback functions that will be used as event handlers for the socket. These are called when the socket receives an event from the API. One will be for general events from the socket, and the other will be specific to game events. You can use the same for both, just dont pass the callback_handler argument when connecting to a game.
 
 ```python
 def ogs_error_handler(data: dict):
@@ -35,13 +39,27 @@ def ogs_error_handler(data: dict):
 
 def ogs_notification_handler(data: dict):
   print(f"OGS Notification from API: {data}")
-
-
-ogs.sock.register_callback('notification', ogs_notification_handler)
-ogs.sock.register_callback('error', ogs_error_handler)
 ```
 
-These callback functions are important, as they will be called when the socket receives a notification or error from the API. Now, we should be setup to both the REST and Realtime APIs.
+These functions are important as they will be sent the event data when we get it from the socket. The OGSGame class handles updating some of its data from these events itself. Currently, its up to you to handle the rest of the events, I intend to make this easier in the future. But there is a large list of events to handle. You can see all valid events [here](https://docs.online-go.com/goban/modules/protocol.html).
+
+From here, we can connect to the socket, passing it the ogs_error_handler function, then we can connect to a game.
+
+```python
+ogs.socket_connect(ogs_error_handler)
+game_id = 12345678
+game = ogs.sock.game_connect(game_id, ogs_notification_handler)
+```
+
+We should now be connected to the Websocket, and connected to the game. We can now interact with the game using the OGSGame class. We can also interact with the socket using the OGSSocket class. See the [OGSSocket](/api/#src.ogsapi.ogssocket.OGSSocket) and [OGSGame](/api/#src.ogsapi.ogsgame.OGSGame) classes for more information.
+
+## Disconnecting from the Realtime API
+
+When we are done with the realtime API, we can disconnect using [disconnect_socket()](/api/#src.ogsapi.client.OGSClient.disconnect_socket). This will properly disconnect from the socket. Not doing this will require you to quit out of the program using a keyboard interrupt.
+
+!!! warning
+
+    It is your responsibility to disconnect from the socket when you are done with it. Not doing so will cause the program to hang when you try to quit. This is because the socket is running in a separate thread, and the program will not quit until all threads are finished.
 
 ## Usage
 
@@ -49,7 +67,7 @@ These callback functions are important, as they will be called when the socket r
 
 Now that we are setup, we can start using the API. The API is split into two parts, the REST API and the Realtime API. The REST API is used for all non-realtime requests, and the Realtime API is used for all realtime requests. Lets get some basic data from the REST API. Not everything is fully Pythonic as of yet, so some methods return the full JSON message received from the API, and some parse out the important info and returns the relevant info. I wont cover everything here, but you can find the full documentation [here](/api/) to see what method does what.
 
-[user_vitals()](/api/#src.ogsapi.api.OGSClient.user_vitals) grabs the users vital information:
+[user_vitals()](/api/#src.ogsapi.client.OGSClient.user_vitals) grabs the users vital information:
 
 ```python
 ogs.user_vitals()
@@ -66,7 +84,7 @@ Gets:
 }
 ```
 
-To get information on a player, you can use [get_player()](/api/#src.ogsapi.api.OGSClient.get_player)]:
+To get information on a player, you can use [get_player()](/api/#src.ogsapi.client.OGSClient.get_player)]:
 
 ```python
 ogs.get_player('Bone-A Lisa') # (1)
@@ -74,7 +92,7 @@ ogs.get_player('Bone-A Lisa') # (1)
 
 1. The username is case sensitive.
 
-If you want to create a challenge, you can use the [create_challenge()](/api/#src.ogsapi.api.OGSClient.create_challenge) method to create either an open or direct challenge. Here is an example of creating a direct challenge:
+If you want to create a challenge, you can use the [create_challenge()](/api/#src.ogsapi.client.OGSClient.create_challenge) method to create either an open or direct challenge. Here is an example of creating a direct challenge:
 
 ```python
 ogs.create_challenge(player_username="Bone-A Lisa", 
@@ -99,7 +117,7 @@ Challenging player: Bone-A Lisa - 1010740
 
 This gives us back the challenge ID and the game ID. The challenge ID is used to accept the challenge, and the game ID is used to get the game information.
 
-To list our incoming challenges, we can use the [received_challenges()](/api/#src.ogsapi.api.OGSClient.received_challenges) method:
+To list our incoming challenges, we can use the [received_challenges()](/api/#src.ogsapi.client.OGSClient.received_challenges) method:
 
 ```python
 ogs.receive_challenges()
@@ -111,63 +129,25 @@ The Realtime API is used for all realtime requests. This includes things like ch
 
 #### Game Class
 
-The most prominent method in the Socket class is connecting to games. This can be done using the [sock.game_connect()](/api/#src.ogsapi.api.OGSSocket.game_connect) method. This returns a [Game](/api/#src.ogsapi.api.Game) object, which contains all the SocketIO functions used to interact with the game. 
+The most prominent method in the Socket class is connecting to games. This can be done using the [sock.game_connect()](/api/#src.ogsapi.ogssocket.OGSSocket.game_connect) method. This returns an [OGSGame](/api/#src.ogsapi.ogsgame.OGSGame) object, which contains all the SocketIO functions used to interact with the game. 
 
-```python
-game_id = 12345678
-game = ogs.sock.game_connect(game_id)
-```
-
-Now, provided we connected to the game sucessfully, we should be able to interact with the game. First however, we need to define the callback functions for the game. These are the events that will need a callback function defined:
-
-- `on_move`
-- `on_clock`
-- `on_phase_change`
-- `on_undo_requested`
-- `on_undo_accepted`
-- `on_undo_canceled`
 
 This can be a little complicated when you want to be able to connect to multiple games at once, So lets create an example class that contains all of our callback functions, as well as any game functions we want to pass to the Socket, and instantiate it:
 
 ```python
 class Game:
-  def __init__(self, game_id: int, ogs: callable):
+  def __init__(self, game_id: int, ogs: Callable):
     self.game_id = game_id
     self.ogs = ogs
+    # Connect to the game, passing the event handler
+    self.connect(callback_handler=self.event_handler)
 
-    # Connect to the game
-    self.game = self.ogs.sock.game_connect(game_id)
+  def connect(self, callback_handler: Callable):
+    self.ogs.sock.game_connect(self.game_id, callback_handler)
 
-    # Register our callback functions
-    self.game.register_callback('on_move', self.on_move)
-    self.game.register_callback('on_clock', self.on_clock)
-    self.game.register_callback('on_phase_change', self.on_phase_change)
-    self.game.register_callback('on_undo_requested', self.on_undo_requested)
-    self.game.register_callback('on_undo_accepted', self.on_undo_accepted)
-    self.game.register_callback('on_undo_canceled', self.on_undo_canceled)
-
-  def on_move(self, data: dict):
-    print(f"Received move from the API: {data}")
-
-  def on_clock(self, data: dict):
-    print(f"Received clock from the API: {data}")
-    self.clock = data
-  
-  def on_phase_change(self, data: dict):
-    print(f"Received phase change from the API: {data}")
-    self.phase = data
-
-  def on_undo_requested(self, data: dict):
-    print(f"Received undo request from the API: {data}")
-    self.undo_requested = data
-  
-  def on_undo_accepted(self, data: dict):
-    print(f"Received undo accepted from the API: {data}")
-    self.undo_accepted = data
-
-  def on_undo_canceled(self, data: dict):
-    print(f"Received undo canceled from the API: {data}")
-    self.undo_canceled = data   
+  def event_handler(self, event_name: str, data: dict):
+    # Here we would do the processing of the events
+    print(f"Got Event: {event_name} with data: {data}") 
 
   def move(self, move: str):
     self.game.move(move)
@@ -190,11 +170,11 @@ game.move('A1') # (1)
 game.pass_turn()
 ```
 
-There are other methods that can be used to interact with the game, which can be found in the [OGSGame](/api/#src.ogsapi.api.OGSGame) class. The game class also stores quite a bit of data about the game, which can be accessed via the class. For example, we can access the game clock using `game.clock`, or the game phase using `game.phase`, both are viewable from the `OGSGame` attributes.
+There are other methods that can be used to interact with the game, which can be found in the [OGSGame](/api/#src.ogsapi.ogsgame.OGSGame) class. The game class also stores quite a bit of data about the game, which can be accessed via the class. For example, we can access the game clock using `game.clock`, or the game phase using `game.phase`, both are viewable from the `OGSGame` attributes.
 
 #### Socket level methods
 
-The [OGSSocket](/api/#src.ogsapi.api.OGSSocket) class also has some methods that can be used to interact with the Socket. These are mainly for conencting and disconnecting to games. But we can also grab the `host_info()` of the host we are connected to, if desired. Or we can `ping()` the server to see if we are still connected.
+The [OGSSocket](/api/#src.ogsapi.ogssocket.OGSSocket) class also has some methods that can be used to interact with the Socket. These are mainly for conencting and disconnecting to games. But we can also grab the `host_info()` of the host we are connected to, if desired. Or we can `ping()` the server to see if we are still connected.
 
 ```python
 ogs.sock.host_info()
@@ -204,6 +184,6 @@ ogs.sock.host_info()
 ogs.sock.ping()
 ```
 
-See the [OGSSocket](/api/#src.ogsapi.api.OGSSocket) class for more information.
+See the [OGSSocket](/api/#src.ogsapi.ogssocket.OGSSocket) class for more information.
 
 
