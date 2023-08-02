@@ -42,8 +42,6 @@ class OGSClient:
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
         self.sock = OGSSocket(self.credentials, debug=debug)
-        self.sock.connect()
-
         self.credentials.user_id = self.user_vitals()
 
     def __del__(self):
@@ -445,3 +443,11 @@ class OGSClient:
         """
         endpoint = f'/games/{game_id}/sgf'
         return self.api.call_rest_endpoint('GET', endpoint).text
+
+    def socket_connect(self):
+        """Connect to the socket."""
+        self.sock.connect()
+
+    def socket_disconnect(self):
+        """Disconnect from the socket. You will need to do this before exiting your program, Or else it will hang and require a keyboard interrupt."""
+        self.sock.disconnect()
