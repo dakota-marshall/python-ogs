@@ -24,5 +24,10 @@ class TestOGSClient(unittest.TestCase):
         self.assertIsNotNone(self.client.credentials.access_token)
         self.assertIsNotNone(self.client.credentials.refresh_token)
 
+    def test_websocket(self):
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
+        self.client.socket_connect()
+        self.client.socket_disconnect()
+
 if __name__ == '__main__':
     unittest.main()
