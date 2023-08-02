@@ -6,7 +6,6 @@ from .ogs_api_exception import OGSApiException
 
 # TODO: This will eventually need to be moved to `termination-api` instead of `/api/v1/`
 # TODO: Should probably implement a user class that contains all user info and functions
-# TODO: Break REST API functions into their own class, leaving the OGSClient class to be the interface for the user client
 
 class OGSClient:
     """Connect to and interact with the OGS REST API and SocketIO API.
@@ -28,7 +27,8 @@ class OGSClient:
         client_secret (str): Client Secret from OGS
         username (str): Username of OGS account
         password (str): Password of OGS account
-        debug (bool, optional): Enable debug logging. Defaults to False.        
+        debug (bool, optional): Enable debug logging. Defaults to False.
+        dev (bool, optional): Use the development API. Defaults to False.    
 
     Attributes:
         credentials (OGSCredentials): Credentials object containing all credentials
@@ -184,7 +184,7 @@ class OGSClient:
         endpoint = '/players/'
         return self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
 
-    # TODO: Need to make these customizable 
+    # TODO: This needs to be using a dataclass to make challenge customization easier
     def create_challenge(self, player_username: str = None, **game_settings):
         """Create either an open challenge or a challenge to a specific player.
         The time control settings are built depending on which time control is used.
