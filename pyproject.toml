@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogsapi"
-version = "0.7.3"
+version = "0.8.0"
 authors = [
   { name="Dakota Marshall", email="me@dakotamarshall.net" },
 ]
