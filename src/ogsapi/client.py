@@ -439,8 +439,13 @@ class OGSClient:
         endpoint = f'/games/{game_id}/sgf'
         return self.api.call_rest_endpoint('GET', endpoint).text
 
-    def socket_connect(self):
-        """Connect to the socket."""
+    def socket_connect(self, callback_handler):
+        """Connect to the socket.
+        
+        Args:
+            callback_handler (Callable): Callback function to send socket events to.
+        """
+        self.sock.callback_handler = callback_handler
         self.sock.connect()
 
     def socket_disconnect(self):

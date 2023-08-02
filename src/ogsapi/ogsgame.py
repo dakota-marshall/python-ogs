@@ -9,11 +9,13 @@ class OGSGame:
         game_socket (OGSSocket): OGSSocket object to connect to the game.
         game_id (str): ID of the game to connect to.
         credentials (OGSCredentials): OGSCredentials object containing tokens for authentication to the Socket
+        callback_handler (Callable): Callback handler function to send events to the user.
         
     Attributes:
         socket (OGSSocket): OGSSocket object to connect to the game.
         game_id (str): ID of the game to connect to.
         credentials (OGSCredentials): OGSCredentials object containing tokens for authentication to the Socket
+        callback_handler (Callable): Callback handler function to send events to the user.
         name (str): Name of the game.
         private (bool): Whether the game is private or not.
         white_player (dict): Dictionary containing information about the white player.
@@ -38,12 +40,13 @@ class OGSGame:
     # To receive data from the game, use the callback function to register functions to be called when data is received.
     # on_move and on_clock are required for the game to function properly, on_undo is only for handling undo requests
     
-    def __init__(self, game_socket: Callable, credentials: OGSCredentials, game_id):
+    def __init__(self, game_socket: Callable, credentials: OGSCredentials, game_id, callback_handler: Callable):
         self.socket = game_socket
         self.game_id = game_id
         # Define callback functions from the API
         self._game_call_backs()
         self.credentials = credentials
+        self.callback_handler = callback_handler
         # Connect to the game
         self.connect()
 
@@ -90,36 +93,32 @@ class OGSGame:
     def __del__(self):
         self.disconnect()
 
-    def register_callback(self, event: str, callback: Callable):
-        """Register a callback function for receiving data from the API.
+    # def register_callback(self, event: str, callback: Callable):
+    #     """Register a callback function for receiving data from the API.
         
-        Args:
-            event (str): Event to register the callback function for.
-                Accepted events are:
-                    - on_move
-                    - on_clock
-                    - on_phase_change
-                    - on_undo_requested
-                    - on_undo_accepted
-                    - on_undo_canceled
-            callback (Callable): Callback function to register.   
-        """
-        self.callback_func[event] = callback
+    #     Args:
+    #         event (str): Event to register the callback function for.
+    #             Accepted events are:
+    #                 - on_move
+    #                 - on_clock
+    #                 - on_phase_change
+    #                 - on_undo_requested
+    #                 - on_undo_accepted
+    #                 - on_undo_canceled
+    #         callback (Callable): Callback function to register.   
+    #     """
+    #     self.callback_func[event] = callback
 
     # Low level socket functions
     def _game_call_backs(self):
 
+        # TODO: Need to create a game board state and have this update it
         @self.socket.on(f'game/{self.game_id}/move')
         def _on_game_move(data):
-            print(f"Got move: {data}")
-            try:
-                self.callback_func['on_move'](data)
-            except TypeError as e:
-                raise OGSApiException("Callback function 'on_move' must be Type Callable") from e
-            
+            self.callback_handler(data)
+
         @self.socket.on(f'game/{self.game_id}/gamedata')
         def _on_game_data(data):
-            print(f'Got Gamedata for game {self.game_id}: {data}')
 
             # Set important game data
             self.game_data = data
@@ -142,7 +141,6 @@ class OGSGame:
         @self.socket.on(f'game/{self.game_id}/clock')
         def _on_game_clock(data):
             #TODO: Need to create a game clock and sync clock with this event
-            print(f'Got Clock: {data}')
 
             # Define clock parameters based on time control
             # TODO: This expects us to receive the clock AFTER the game data, 
@@ -196,50 +194,31 @@ class OGSGame:
                     }
             
             # Call the on_clock callback
-            try:
-                self.callback_func['on_clock'](self.clock)
-            except TypeError as e:
-                raise OGSApiException("Callback function 'on_clock' must be Type Callable") from e
+            self.callback_handler(event_name="clock", data=data)
 
         @self.socket.on(f'game/{self.game_id}/phase')
         def _on_game_phase(data):
-            print(f"Got Phase Change: {data}")
             self.phase = data
-            try:
-                self.callback_func['on_phase_change'](self.phase)
-            except TypeError as e:
-                raise OGSApiException("Callback function 'on_phase_change' must be Type Callable") from e
+            self.callback_handler(event_name="phase", data=data)
 
         @self.socket.on(f'game/{self.game_id}/latency')
         def _on_game_latency(data):
-            print(f'Got Latency: {data}')
             self.latency = data['latency']
+            self.callback_handler(event_name="latency", data=data)
 
         @self.socket.on(f'game/{self.game_id}/undo_requested')
         def _on_undo_requested(data):
             #TODO: Handle This 
-            print(f'Got Undo Request: {data}')
-            try:
-                self.callback_func['on_undo_requested'](data)
-            except TypeError as e:
-                raise OGSApiException("Callback function 'on_undo_requested' must be Type Callable") from e
+            self.callback_handler(event_name="undo_requested", data=data)
         
         @self.socket.on(f'game/{self.game_id}/undo_accepted')
         def _on_undo_accepted(data):
             #TODO: Handle This
-            print(f'Got Accepted Undo: {data}')
-            try:
-                self.callback_func['on_undo_accepted'](data)
-            except TypeError as e:
-                raise OGSApiException("Callback function 'on_undo_accepted' must be Type Callable") from e
+            self.callback_handler(event_name="undo_accepted", data=data)
         
         @self.socket.on(f'game/{self.game_id}/undo_canceled')
         def _on_undo_canceled(data):
-            print(f"Got Canceled Undo: {data}")
-            try:
-                self.callback_func['on_undo_canceled'](data)
-            except TypeError as e:
-                raise OGSApiException("Callback function 'on_undo_canceled' must be Type Callable") from e
+            self.callback_handler(event_name="undo_canceled", data=data)
     
     # Send functions
     def connect(self):

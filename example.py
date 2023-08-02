@@ -10,48 +10,22 @@ password=""
 # This doesnt have to be a class, but because of the callback function requirement,
 # its easier to manage multiple games this way.
 
-def ogs_error_handler(data: dict):
-  print(f"OGS Error from API: {data}")
-
-def ogs_notification_handler(data: dict):
-  print(f"OGS Notification from API: {data}")
+def ogs_event_handler(event_name: str, data: dict):
+  print(f"Got Event: {event_name} with data: {data}") 
 
 class Game:
-  def __init__(self, game_id: int, ogs: callable):
+  def __init__(self, game_id: int, ogs: Callable):
     self.game_id = game_id
     self.ogs = ogs
-    # Connect to the game
-    self.game = self.ogs.sock.game_connect(game_id)
-    # Register our callback function `on_move`
-    self.game.register_callback('on_move', self.on_move)
-    self.game.register_callback('on_clock', self.on_clock)
-    self.game.register_callback('on_phase_change', self.on_phase_change)
-    self.game.register_callback('on_undo_requested', self.on_undo_requested)
-    self.game.register_callback('on_undo_accepted', self.on_undo_accepted)
-    self.game.register_callback('on_undo_canceled', self.on_undo_canceled)
+    # Connect to the game, passing the event handler
+    self.connect(callback_handler=self.event_handler)
 
-  def on_move(self, data: dict):
-    print(f"Received move from the API: {data}")
+  def connect(self, callback_handler: Callable):
+    self.ogs.sock.game_connect(self.game_id, callback_handler)
 
-  def on_clock(self, data: dict):
-    print(f"Received clock from the API: {data}")
-    self.clock = data
-  
-  def on_phase_change(self, data: dict):
-    print(f"Received phase change from the API: {data}")
-    self.phase = data
-
-  def on_undo_requested(self, data: dict):
-    print(f"Received undo request from the API: {data}")
-    self.undo_requested = data
-  
-  def on_undo_accepted(self, data: dict):
-    print(f"Received undo accepted from the API: {data}")
-    self.undo_accepted = data
-
-  def on_undo_canceled(self, data: dict):
-    print(f"Received undo canceled from the API: {data}")
-    self.undo_canceled = data   
+  def event_handler(self, event_name: str, data: dict):
+    # Here we would do the processing of the events
+    print(f"Got Event: {event_name} with data: {data}") 
 
   def move(self, move: str):
     self.game.move(move)
@@ -67,14 +41,6 @@ ogs = OGSClient(
     password=password,
     debug=False
   )
-
-# Still need to connect to chat and notifications manually
-ogs.sock.notification_connect()
-ogs.sock.chat_connect()
-
-# Register socket level callbacks
-ogs.sock.register_callback('notification', ogs_notification_handler)
-ogs.sock.register_callback('error', ogs_error_handler)
 
 # Instantiate the example Game class and pass it the game_id and ogs object
 game_id = 12345678
