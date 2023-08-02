@@ -44,11 +44,6 @@ class OGSClient:
         self.sock = OGSSocket(self.credentials, debug=debug)
         self.credentials.user_id = self.user_vitals()
 
-    def __del__(self):
-        # Disconnect the OGSSocket instance if it exists
-        if hasattr(self, 'sock') and self.sock is not None:
-            self.sock.disconnect()
-
     # User Specific Resources: /me
 
     def user_vitals(self):
