@@ -33,10 +33,7 @@ class OGSSocket:
         # Dict of connected game objects
         self.games = {}
         # Socket level callbacks
-        self.client_callbacks = {
-            'notification': None,
-            'error': None,
-        }
+        self.callback_handler = lambda event_name, data: None
         self.credentials = credentials
         self.socket = socketio.Client(logger=debug, engineio_logger=False)
 
@@ -52,18 +49,18 @@ class OGSSocket:
         except Exception as e:
             raise OGSApiException("Failed to connect to OGS Websocket") from e
 
-    def register_callback(self, event: str, callback: Callable):
-        """Register a callback function for receiving data from the API.
+    # def register_callback(self, event: str, callback: Callable):
+    #     """Register a callback function for receiving data from the API.
         
-        Args:
-            event (str): Event to register the callback function for.
-                Accepted events are:
-                    - notification
-                    - chat
-                    - error
-            callback (Callable): Callback function to register.   
-        """
-        self.client_callbacks[event]: OGSGame = callback
+    #     Args:
+    #         event (str): Event to register the callback function for.
+    #             Accepted events are:
+    #                 - notification
+    #                 - chat
+    #                 - error
+    #         callback (Callable): Callback function to register.   
+    #     """
+    #     self.client_callbacks[event]: OGSGame = callback
 
     # Listens to events received from the socket via the decorators, and calls the appropriate function
     def socket_callbacks(self):
@@ -95,26 +92,22 @@ class OGSSocket:
         @self.socket.on('active_game')
         def on_active_game(data):
             """Called when an active game is received on the socket"""
-            print(f"Got active game: {data}")
+            self.callback_handler(event_name="active_game", data=data)
 
         @self.socket.on('notification')
         def on_notification(data):
             """Called when a notification is received on the socket"""
-            print(f"Got notification: {data}")
+            self.callback_handler(event_name="notification", data=data)
 
         @self.socket.on('ERROR')
         def on_error(data):
             """Called when an error is received from the server"""
-            print(f"Got error: {data}")
-            try:
-                self.client_callbacks['error'](data)
-            except TypeError as e:
-                raise OGSApiException("Callback function 'error' must be Type Callable") from e
+            self.callback_handler(event_name="ERROR", data=data)
 
         @self.socket.on('*')
         def catch_all(event, data):
             """Catch all for events"""
-            print(f"Got Event: {event} \n {data}")
+            self.callback_handler(event_name=event, data=data)
 
     # Get info on connected server
     def host_info(self):
@@ -134,17 +127,19 @@ class OGSSocket:
         """Connect to the chat socket"""
         self.socket.emit(event="chat/connect", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.user_id, "username": self.credentials.username})
 
-    def game_connect(self, game_id: int):
+    def game_connect(self, game_id: int, callback_handler: Callable = None):
         """Connect to a game
         
         Args:
             game_id (int): The id of the game to connect to
+            callback_handler (Callable, optional): The callback handler for the game. Defaults to the callback_handler of the socket.
             
         Returns:
             OGSGame (OGSGame): The game object
         """
-
-        self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, credentials=self.credentials)
+        if callback_handler is None:
+            callback_handler = self.callback_handler
+        self.games[game_id] = OGSGame(game_socket=self.socket, game_id=game_id, credentials=self.credentials, callback_handler=callback_handler)
 
         return self.games[game_id]
 
