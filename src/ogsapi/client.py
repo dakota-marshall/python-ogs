@@ -67,11 +67,11 @@ class OGSClient:
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
     def update_user_settings(
-            self, username: str = None, 
-            first_name: str = None, 
-            last_name: str = None, 
-            private_name: bool = None, 
-            country: str = None, 
+            self, username: str = None,
+            first_name: str = None,
+            last_name: str = None,
+            private_name: bool = None,
+            country: str = None,
             website: str = None,
             about: str = None
         ):
