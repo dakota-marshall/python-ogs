@@ -63,10 +63,13 @@ class OGSClient:
         sock (OGSSocket): SocketIO connection to OGS
 
     """
-    def __init__(self, client_id, client_secret, username, password, log_level: str = 'INFO', dev: bool = False):
+    def __init__(self, client_id, client_secret, username, password, log_level: str = 'INFO', log_file: str = None, dev: bool = False):
 
+        # Setup Logging
         logger.remove()
         logger.add(sys.stderr, level=log_level.upper())
+        if log_file is not None:
+            logger.add(log_file)
 
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
