@@ -1,4 +1,5 @@
 import requests
+from loguru import logger
 from .ogscredentials import OGSCredentials
 from .ogs_api_exception import OGSApiException
 
@@ -21,18 +22,22 @@ class OGSRestAPI:
         self.api_ver = "v1"
         if dev:
             self.base_url = 'https://beta.online-go.com/'
+            logger.debug("Connecting to beta OGS instance")
         else:
             self.base_url = 'https://online-go.com/'
+            logger.debug("Connecting to production OGS instance")
 
         # TODO: Maybe implement some form of token caching
         self.authenticate()
         self.get_auth_data()
 
     # TODO: All these internal functions should be moved into private functions
+    @logger.catch
     def authenticate(self):
         """Authenticate with the OGS API and save the access token and user ID."""
 
         endpoint = f'{self.base_url}/oauth2/token/'
+        logger.info("Authenticating with OGS API")
         try:
             response = requests.post(endpoint, data={
                 'client_id': self.credentials.client_id,
@@ -54,6 +59,7 @@ class OGSRestAPI:
         else:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
+    @logger.catch
     def call_rest_endpoint(self, method: str, endpoint: str, params: dict = None, payload: dict = None):
         """Make a request to the OGS REST API.
         
@@ -76,6 +82,7 @@ class OGSRestAPI:
             raise OGSApiException(f"Invalid HTTP Method, Got: {method}. Expected: GET, POST, PUT, DELETE")
 
         # Add payload if method is POST or PUT
+        logger.debug(f"Making {method} request to {url}")
         if method in ['POST', 'PUT']:
             try:
                 response = requests.request(method, url, headers=headers, params=params, payload=payload, timeout=20)
@@ -92,8 +99,10 @@ class OGSRestAPI:
 
         raise OGSApiException(f"{response.status_code}: {response.reason}")
 
+    @logger.catch
     def get_auth_data(self):
         """Get the auth data from the OGS API and save it to the credentials object for use in the socket connection."""
+        logger.info("Getting auth data from OGS API")
         auth_data = self.call_rest_endpoint('GET', '/ui/config').json()
         self.credentials.chat_auth = auth_data['chat_auth']
         self.credentials.user_jwt = auth_data['user_jwt']

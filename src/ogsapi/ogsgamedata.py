@@ -1,4 +1,5 @@
 import dataclasses
+from loguru import logger
 
 @dataclasses.dataclass
 class Player:
@@ -20,6 +21,7 @@ class Player:
     for key, value in new_values.items():
       if hasattr(self, key):
         setattr(self, key, value)
+    logger.debug(f"Updated player data: {self}")
 
 @dataclasses.dataclass
 class TimeControl:
@@ -48,6 +50,7 @@ class TimeControl:
     for key, value in new_values.items():
       if hasattr(self, key):
         setattr(self, key, value)
+    logger.debug(f"Updated TimeControl data: {self}")
 
 @dataclasses.dataclass
 class OGSGameData:
@@ -110,3 +113,4 @@ class OGSGameData:
         self.time_control.update(value)
       elif hasattr(self, key):
         setattr(self, key, value)
+    logger.debug(f"Updated game data: {self}")
