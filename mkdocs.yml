@@ -43,3 +43,4 @@ nav:
   - Home: index.md
   - Usage: usage.md
   - Documentation: api.md
+  - API Checklist: checklist.md
