@@ -6,9 +6,10 @@ from .ogssocket import OGSSocket
 from .ogsrestapi import OGSRestAPI
 from .ogs_api_exception import OGSApiException
 
-# Intercepts the logs from SocketIO, EngineIO, and urllib and sends them to the logger
 class InterceptHandler(logging.Handler):
+    """Intercepts the logs from SocketIO, EngineIO, and urllib and sends them to the logger"""
     def emit(self, record):
+        """Parse the log and emit to the logger"""
         # Get corresponding Loguru level if it exists.
         try:
             level = logger.level(record.levelname).name
