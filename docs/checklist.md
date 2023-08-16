@@ -1,0 +1,73 @@
+## Checklist
+
+Checklist of API calls / events that are implemented. (**Likely note up to date, nor is the list comprehensive**)
+
+- [ ] REST API
+  - [ ] Games
+    - [ ] GET - id
+    - [x] GET - id/png
+    - [ ] GET - id/reviews
+    - [x] GET - id/sgf
+  - [ ] Me
+    - [x] GET - /
+    - [ ] GET - account_settings
+    - [ ] GET - blocks
+    - [x] GET - friends
+    - [x] GET - games
+    - [x] GET - challenges
+    - [ ] GET - groups
+    - [ ] GET - ladders
+    - [x] GET - settings
+    - [ ] GET - ui/overview
+  - [ ] Players
+    - [x] GET - id
+    - [ ] GET - id/full
+    - [x] GET - id/games
+    - [ ] GET - id/groups
+    - [ ] GET - id/ladders
+    - [ ] GET - id/tournaments
+- [ ] Realtime API Game Events
+  - [ ] Server to Client
+    - [ ] auto_resign
+    - [ ] chat (This is for chat rooms, low priority)
+    - [ ] chat/remove
+    - [ ] clear_auto_resign
+    - [x] clock
+    - [ ] conditional_moves
+    - [x] error
+    - [x] gamedata
+    - [x] latency
+    - [x] phase
+    - [ ] removed_stones
+    - [ ] removed_stones_accepted
+    - [ ] reset
+    - [ ] reset-chats
+    - [x] undo_accepted
+    - [x] undo_canceled
+    - [x] undo_requested
+  - Client to Server
+    - [ ] annul
+    - [x] cancel
+    - [x] chat
+    - [ ] chat/remove
+    - [ ] clear_delayed_resign
+    - [ ] conditional_moves/set
+    - [x] connect
+    - [ ] delayed_resign
+    - [x] disconnect
+    - [ ] latency
+    - [ ] log
+    - [x] move
+    - [x] pause
+    - [ ] removed_stones/accept
+    - [ ] removed_stones/reject
+    - [ ] removed_stones/set
+    - [x] resign
+    - [x] resume
+    - [ ] timed_out
+    - [x] undo/accept
+    - [x] undo/cancel
+    - [x] undo/request
+- [x] Implement proper challenge creation
+- [x] Create open challenge
+- [ ] Handle accepting / rejecting counting
