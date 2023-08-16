@@ -221,6 +221,20 @@ class OGSClient:
         endpoint = '/players/'
         logger.info(f"Getting player {player_username}")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
+    
+    def get_player_games(self, player_username):
+        """Get a player's games by username.
+        
+        Args:
+            player_username (str): Username of the player to get games of.
+            
+        Returns:
+            player_games (dict): Player games returned from the endpoint
+        """
+        logger.info(f"Getting player {player_username}'s games")
+        player_id = self.get_player(player_username)['id']
+        endpoint = f'/players/{player_id}/games'
+        return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
     # TODO: This needs to be using a dataclass to make challenge customization easier
     def create_challenge(self, player_username: str = None, **game_settings):
