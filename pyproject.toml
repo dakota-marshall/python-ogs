@@ -8,14 +8,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ogsapi"
 version = "1.1.1"
-license = "GPL-3.0"
+license = {file = "LICENSE"}
 authors = [
   { name="Dakota Marshall", email="me@dakotamarshall.net" },
 ]
 description = "An API Wrapper for online-go.com, an online Go / Baduk server"
 readme = "README.md"
-repository = "https://gitlab.com/dakota.marshall/ogs-python"
-documentation = "https://ogs-python.dakotamarshall.net/"
 requires-python = ">=3.7"
 dependencies = [
   "python-engineio==3.13.2",
@@ -29,3 +27,8 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
 ]
+[project.urls]
+Homepage = "https://gitlab.com/dakota.marshall/ogs-python"
+Repository = "https://gitlab.com/dakota.marshall/ogs-python"
+Documentation = "https://ogs-python.dakotamarshall.net/"
+Changelog = "https://gitlab.com/dakota.marshall/ogs-python/-/commits/prod/"
