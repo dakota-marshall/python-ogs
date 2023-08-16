@@ -1,4 +1,5 @@
 import dataclasses
+from loguru import logger
 #TODO: Implement Canadian and Absolute time controls
 
 @dataclasses.dataclass
@@ -20,6 +21,7 @@ class ByoyomiTime:
     for key, value in new_values.items():
       if hasattr(self, key):
         setattr(self, key, value)
+    logger.debug(f"Updated time data: {self}")
 
 @dataclasses.dataclass
 class FischerTime:
@@ -41,6 +43,7 @@ class FischerTime:
     for key, value in new_values.items():
       if hasattr(self, key):
         setattr(self, key, value)
+    logger.debug(f"Updated time data: {self}")
 
 @dataclasses.dataclass
 class OGSGameClock:
@@ -85,6 +88,7 @@ class OGSGameClock:
       elif hasattr(self, key):
         setattr(self, key, value)
     # Update the ruleset if it has changed
+    logger.debug(f"Updated game clock data: {self}")
     self.set_timecontrol()
 
   def set_timecontrol(self):
@@ -92,8 +96,12 @@ class OGSGameClock:
     for player in [self.white_time, self.black_time]:
       if self.system == "byoyomi" and player is not ByoyomiTime:
         player = ByoyomiTime()
+        logger.debug("Set time control to Byoyomi")
       elif self.system == "fischer" and player is not FischerTime:
         player = FischerTime()
+        logger.debug("Set time control to Fischer")
       else:
         player = None
+        logger.debug("Set time control to None")
+
 

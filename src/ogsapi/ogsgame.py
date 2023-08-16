@@ -1,4 +1,5 @@
 from typing import Callable
+from loguru import logger
 from .ogs_api_exception import OGSApiException
 from .ogscredentials import OGSCredentials
 from .ogsgamedata import OGSGameData
@@ -60,11 +61,12 @@ class OGSGame:
         # TODO: Need to create a game board state and have this update it
         @self.socket.on(f'game/{self.game_data.game_id}/move')
         def _on_game_move(data):
+            logger.debug(f"Received move {data['move']} from game {self.game_data.game_id} - {data}")
             self.callback_handler(event_name='move', data=data)
 
         @self.socket.on(f'game/{self.game_data.game_id}/gamedata')
         def _on_game_data(data):
-
+            logger.debug(f"Received game data from game {self.game_data.game_id} - {data}")
             # Set important game data
             self.game_data.update(data)
             if self.clock.system == None:
@@ -73,6 +75,7 @@ class OGSGame:
 
         @self.socket.on(f'game/{self.game_data.game_id}/clock')
         def _on_game_clock(data):
+            logger.debug(f"Received clock data from game {self.game_data.game_id} - {data}")
             #TODO: Need to create a game clock and sync clock with this event
 
             # Define clock parameters based on time control
@@ -83,52 +86,57 @@ class OGSGame:
 
         @self.socket.on(f'game/{self.game_data.game_id}/phase')
         def _on_game_phase(data):
+            logger.debug(f"Received phase data from game {self.game_data.game_id} - {data}")
             self.game_data.phase = data
             self.callback_handler(event_name="phase", data=data)
 
         @self.socket.on(f'game/{self.game_data.game_id}/latency')
         def _on_game_latency(data):
+            logger.debug(f"Received latency data from game {self.game_data.game_id} - {data}")
             self.game_data.latency = data['latency']
             self.callback_handler(event_name="latency", data=data)
 
         @self.socket.on(f'game/{self.game_data.game_id}/undo_requested')
         def _on_undo_requested(data):
+            logger.debug(f"Received undo request from game {self.game_data.game_id} - {data}")
             #TODO: Handle This 
             self.callback_handler(event_name="undo_requested", data=data)
         
         @self.socket.on(f'game/{self.game_data.game_id}/undo_accepted')
         def _on_undo_accepted(data):
+            logger.debug(f"Received undo accepted from game {self.game_data.game_id} - {data}")
             #TODO: Handle This
             self.callback_handler(event_name="undo_accepted", data=data)
         
         @self.socket.on(f'game/{self.game_data.game_id}/undo_canceled')
         def _on_undo_canceled(data):
+            logger.debug(f"Received undo canceled from game {self.game_data.game_id} - {data}")
             self.callback_handler(event_name="undo_canceled", data=data)
     
     # Send functions
     def connect(self):
         """Connect to the game"""
-        print(f"Connecting to game {self.game_data.game_id}")
+        logger.info(f"Connecting to game {self.game_data.game_id}")
         self.socket.emit(event="game/connect", data={'game_id': self.game_data.game_id, 'player_id': self.credentials.user_id, 'chat': False})
 
     def disconnect(self):
         """Disconnect from the game"""
-        print(f"Disconnecting game {self.game_data.game_id}")
+        logger.info(f"Disconnecting game {self.game_data.game_id}")
         self.socket.emit(event="game/disconnect", data={'game_id': self.game_data.game_id})
 
     def get_gamedata(self):
         """Get game data"""
-        print(f"Getting game data for game {self.game_data.game_id}")
+        logger.info(f"Getting game data for game {self.game_data.game_id}")
         self.socket.emit(event=f"game/{self.game_data.game_id}/gamedata", data={})
 
     def pause(self):
         """Pause the game"""
-        print(f"Pausing game {self.game_data.game_id}")
+        logger.info(f"Pausing game {self.game_data.game_id}")
         self.socket.emit(event="game/pause", data={'game_id': self.game_data.game_id})
 
     def resume(self):
         """Resume the game"""
-        print(f"Resuming game {self.game_data.game_id}")
+        logger.info(f"Resuming game {self.game_data.game_id}")
         self.socket.emit(event="game/resume", data={'game_id': self.game_data.game_id})
 
     def move(self, move):
@@ -141,17 +149,17 @@ class OGSGame:
             >>> game.move('B2')
         """
 
-        print(f"Submitting move {move} to game {self.game_data.game_id}")
+        logger.info(f"Submitting move {move} to game {self.game_data.game_id}")
         self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.user_id, 'game_id': self.game_data.game_id, 'move': move})
 
     def resign(self):
         """Resign the game"""
-        print(f"Resigning game {self.game_data.game_id}")
+        logger.info(f"Resigning game {self.game_data.game_id}")
         self.socket.emit(event="game/resign", data={'auth': self.credentials.chat_auth, 'game_id': self.game_data.game_id})  
     
     def cancel(self):
         """Cancel the game if within the first few moves"""
-        print(f"Canceling game {self.game_data.game_id}")
+        logger.info(f"Canceling game {self.game_data.game_id}")
         self.socket.emit(event="game/cancel", data={'auth': self.credentials.chat_auth, 'game_id': self.game_data.game_id})
 
     def undo(self, move: int):
@@ -160,7 +168,7 @@ class OGSGame:
         Args:
             move (int): The move number to accept the undo at.        
         """
-        print(f"Requesting undo on game {self.game_data.game_id}")
+        logger.info(f"Requesting undo on game {self.game_data.game_id}")
         self.socket.emit(event="game/undo/request", data={'auth': self.credentials.chat_auth, 'game_id': self.game_data.game_id, 'move_number': move})
 
     def cancel_undo(self, move: int):
@@ -169,7 +177,7 @@ class OGSGame:
         Args:
             move (int): The move number to accept the undo at.        
         """
-        print(f"Canceling undo on game {self.game_data.game_id}")
+        logger.info(f"Canceling undo on game {self.game_data.game_id}")
         self.socket.emit(event="game/undo/cancel", data={'auth': self.credentials.chat_auth, 'game_id': self.game_data.game_id, 'move_number': move})
 
     def accept_undo(self, move: int):
@@ -178,12 +186,12 @@ class OGSGame:
         Args:
             move (int): The move number to accept the undo at.
         """
-        print(f"Accepting undo on game {self.game_data.game_id}")
+        logger.info(f"Accepting undo on game {self.game_data.game_id}")
         self.socket.emit(event="game/undo/accept", data={'auth': self.credentials.chat_auth, 'game_id': self.game_data.game_id, 'move_number': move})
 
     def pass_turn(self):
         """Pass the turn in the game"""
-        print(f'Submitting move pass to game {self.game_data.game_id}')
+        logger.info(f'Submitting move pass to game {self.game_data.game_id}')
         self.socket.emit(event="game/move", data={'auth': self.credentials.chat_auth, 'player_id': self.credentials.user_id, 'game_id': self.game_data.game_id, 'move': '..'})
     
     def send_chat(self, message: str, chat_type: str, move: int):
@@ -197,5 +205,5 @@ class OGSGame:
         Examples:
             >>> game.send_chat('Hello World', 'game')
         """
-        print(f'Sending chat message to game {self.game_data.game_id}')
+        logger.info(f'Sending chat message to game {self.game_data.game_id}')
         self.socket.emit(event="game/chat", data={'auth': self.credentials.chat_auth, 'game_id': self.game_data.game_id, 'body': message, 'type': chat_type, 'move_number': move})
