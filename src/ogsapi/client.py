@@ -44,7 +44,7 @@ class OGSClient:
             client_secret=client_secret, 
             username=username, 
             password=password,
-            debug=False
+            log_level='DEBUG'
             )
         Connecting to Websocket
         Connected to socket, authenticating

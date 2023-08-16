@@ -25,7 +25,7 @@ from ogsapi.client import OGSClient
 
 ogs = OGSClient('your_client_id', 'your_client_secret', 'your_username', 'your_password')
 ```
-If you want debug logs, you can pass `debug=True` to the constructor. This will authenticate you to OGS using your API credentials, but does not connect to the Realtime API.
+If you want debug logs, you can pass `log_level='DEBUG'` to the constructor. This will authenticate you to OGS using your API credentials, but does not connect to the Realtime API.
 
 From here, you should be able to call of the REST API related methods.
 

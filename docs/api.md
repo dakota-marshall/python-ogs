@@ -11,3 +11,8 @@
 ::: src.ogsapi.ogssocket
 
 ::: src.ogsapi.ogscredentials
+
+::: src.ogsapi.ogsgamedata
+
+::: src.ogsapi.ogsgameclock
+
