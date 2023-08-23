@@ -56,7 +56,7 @@ create_release:
         description: '$CI_COMMIT_TAG_MESSAGE'
         ref: '$CI_COMMIT_SHA'
         assets:
-            links:
+            package:
                 - name: 'PyPI Package'
                   url: 'https://pypi.org/project/ogsapi/$RELEASE_NUMBER/' 
     rules:
