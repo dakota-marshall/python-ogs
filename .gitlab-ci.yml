@@ -1,6 +1,7 @@
 stages:
     - test
     - build
+    - prepare
     - release
 
 test:
@@ -44,13 +45,22 @@ pages:
     rules:
         - if: '$CI_COMMIT_BRANCH == "prod"'
 
+prepare_release:
+    stage: prepare
+    script:
+        - echo "RELEASE_NUMBER=$(echo $CI_COMMIT_TAG | sed 's/v//')" >> variables.env
+    artifacts:
+        reports:
+            dotenv: variables.env
+
 create_release:
     stage: release
     image: registry.gitlab.com/gitlab-org/release-cli:latest
-    before_script:
-        - RELEASE_NUMBER=$(echo $CI_COMMIT_TAG | sed "s/v//g")
+    needs:
+        - job: prepare_release
+          artifacts: true
     script:
-        - echo "creating GitLab Release"
+        - echo "creating GitLab Release for $CI_COMMIT_TAG"
     release:
         tag_name: '$CI_COMMIT_TAG'
         description: '$CI_COMMIT_TAG_MESSAGE'
