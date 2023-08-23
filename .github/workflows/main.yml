@@ -1,0 +1,21 @@
+name: Releases
+
+on: 
+  push:
+    tags:
+    - '*'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - uses: Helmisek/conventional-changelog-generator@v1.0.6-release
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: ncipollo/release-action@v1
+      with:
+        body: ${{ changelog }}
