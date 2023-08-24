@@ -47,5 +47,28 @@ class TestOGSClient(unittest.TestCase):
         self.client.socket_connect(lambda event_name, data: None)
         self.client.socket_disconnect()
 
+    def test_user_vitals(self):
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
+        vitals = self.client.user_vitals()
+        self.assertIsInstance(vitals, dict)
+        self.assertIsInstance(vitals['username'], str)
+        self.assertIsInstance(vitals['id'], int)
+        self.assertIsInstance(vitals['ranking'], float)
+
+    def test_get_player(self):
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
+        user = self.client.get_player(self.username)
+        self.assertIsInstance(user, dict)
+        self.assertEqual(user['username'], self.username)
+    
+    def test_get_player_games(self):
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
+        games = self.client.get_player_games(self.username)
+        self.assertIsInstance(games, dict)
+        self.assertIsInstance(games['results'], list)
+        self.assertIsInstance(games['results'][0], dict)
+        self.assertIsInstance(games['results'][0]['id'], int)
+
+
 if __name__ == '__main__':
     unittest.main()
