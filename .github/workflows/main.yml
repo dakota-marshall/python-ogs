@@ -16,7 +16,7 @@ jobs:
       - id: generate_message
         name: Set Changelog Message
         run: |
-          echo 'changelog << EOF' >> $GITHUB_OUTPUT
+          echo 'changelog<<EOF' >> $GITHUB_OUTPUT
           echo "$(python get_release_msg.py)" >> $GITHUB_OUTPUT  
           echo 'EOF' >> $GITHUB_OUTPUT
       - uses: ncipollo/release-action@v1
