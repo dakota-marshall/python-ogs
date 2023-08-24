@@ -385,11 +385,11 @@ class OGSClient:
             print(f"Challenging player: {player_username} - {player_id}")
             endpoint = f'/players/{player_id}/challenge/'
             logger.info(f"Sending challenge to {player_username} - {player_id}")
-            response = self.api.call_rest_endpoint('POST', endpoint, challenge).json()
+            response = self.api.call_rest_endpoint(method='POST', endpoint=endpoint, payload=asdict(challenge)).json()
         else:
             endpoint = '/challenges/'
             logger.info("Sending open challenge")
-            response = self.api.call_rest_endpoint('POST', endpoint, challenge).json()
+            response = self.api.call_rest_endpoint(method='POST', endpoint=endpoint, payload=asdict(challenge)).json()
 
         logger.debug(f"Challenge response - {response}")
         challenge_id = response['challenge']
