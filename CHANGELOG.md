@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added CI workflow for creating releases both in Gitlab and Github
 - Added Changelog to mkdocs
 
+### Fixed
+- Fixed `POST` requests to the REST API not working correctly due to usint data instead of json
+- Fixed send_created_challenge() not working correctly due to using positional arguments instead of keyword arguments
+
 ## [1.1.2] - 2023-08-16
 
 ### Changed
