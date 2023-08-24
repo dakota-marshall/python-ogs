@@ -39,15 +39,20 @@ class Game:
 
 # Instantiate Client
 ogs = OGSClient(
-    client_id=client_id, 
-    client_secret=client_secret, 
-    username=username, 
+    client_id=client_id,
+    client_secret=client_secret,
+    username=username,
     password=password,
-    debug=False
+    log_level='DEBUG'
   )
+ogs.socket_connect(ogs_event_handler)
+game_id = 56202921
+
+game = ogs.sock.game_connect(game_id)
+game.move('ss')
 
 # Instantiate the example Game class and pass it the game_id and ogs object
-game_id = 12345678
+game_id = 34879779
 game = Game(game_id, ogs)
 
 # Make a move
