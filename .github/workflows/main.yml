@@ -13,9 +13,10 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
-      - name: Set Changelog Message
+      - id: generate_message
+        name: Set Changelog Message
         run: |
-          echo "CHANGELOG=$(python get_release_msg.py)" >> $GITHUB_ENV  
+          echo "changelog=$(python get_release_msg.py)" >> $GITHUB_OUTPUT  
       - uses: ncipollo/release-action@v1
         with:
-          body: ${{ CHANGELOG }}
+          body: ${{ steps.generate_message.outputs.changelog }}
