@@ -13,9 +13,9 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
-    - uses: Helmisek/conventional-changelog-generator@v1.0.6-release
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set Changelog Message
+      run: |
+      echo "CHANGELOG=$(python get_release_msg.py)" >> $GITHUB_ENV  
     - uses: ncipollo/release-action@v1
       with:
-        body: ${{ changelog }}
+        body: ${{ CHANGELOG }}
