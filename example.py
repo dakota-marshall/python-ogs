@@ -1,10 +1,14 @@
-from ogsapi.client import OGSClient
+import dotenv
+import os
+from src.ogsapi.client import OGSClient
+from typing import Callable
 
 # Prep variables
-client_id=""
-client_secret=""
-username="Bone-A Lisa"
-password=""
+dotenv.load_dotenv()
+client_id = os.getenv('OGS_CLIENT_ID')
+client_secret = os.getenv('OGS_CLIENT_SECRET')
+username = os.getenv('OGS_USERNAME')
+password = os.getenv('OGS_PASSWORD')
 
 # Basic example class for handling the game object received from the wrapper
 # This doesnt have to be a class, but because of the callback function requirement,

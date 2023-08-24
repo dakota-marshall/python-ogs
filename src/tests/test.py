@@ -15,15 +15,18 @@
 
 import unittest
 import os
+import dotenv
 from src.ogsapi.client import OGSClient
 
 class TestOGSClient(unittest.TestCase):
 
     def setUp(self):
-        self.client_id = os.environ.get('OGS_CLIENT_ID')
-        self.client_secret = os.environ.get('OGS_CLIENT_SECRET')
-        self.username = os.environ.get('OGS_USERNAME')
-        self.password = os.environ.get('OGS_PASSWORD')
+        # Load environment variables
+        dotenv.load_dotenv()
+        self.client_id = os.getenv('OGS_CLIENT_ID')
+        self.client_secret = os.getenv('OGS_CLIENT_SECRET')
+        self.username = os.getenv('OGS_USERNAME')
+        self.password = os.getenv('OGS_PASSWORD')
 
     def tearDown(self):
         self.client = None

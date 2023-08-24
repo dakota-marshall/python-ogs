@@ -1,3 +1,4 @@
 __pycache__/
 public/
 docs/index.md
+.env
