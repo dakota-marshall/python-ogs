@@ -1,10 +1,14 @@
-from ogsapi.client import OGSClient
+import dotenv
+import os
+from src.ogsapi.client import OGSClient
+from typing import Callable
 
 # Prep variables
-client_id=""
-client_secret=""
-username="Bone-A Lisa"
-password=""
+dotenv.load_dotenv()
+client_id = os.getenv('OGS_CLIENT_ID')
+client_secret = os.getenv('OGS_CLIENT_SECRET')
+username = os.getenv('OGS_USERNAME')
+password = os.getenv('OGS_PASSWORD')
 
 # Basic example class for handling the game object received from the wrapper
 # This doesnt have to be a class, but because of the callback function requirement,
@@ -35,15 +39,20 @@ class Game:
 
 # Instantiate Client
 ogs = OGSClient(
-    client_id=client_id, 
-    client_secret=client_secret, 
-    username=username, 
+    client_id=client_id,
+    client_secret=client_secret,
+    username=username,
     password=password,
-    debug=False
+    log_level='DEBUG'
   )
+ogs.socket_connect(ogs_event_handler)
+game_id = 56202921
+
+game = ogs.sock.game_connect(game_id)
+game.move('ss')
 
 # Instantiate the example Game class and pass it the game_id and ogs object
-game_id = 12345678
+game_id = 34879779
 game = Game(game_id, ogs)
 
 # Make a move

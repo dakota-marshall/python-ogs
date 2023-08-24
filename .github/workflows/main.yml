@@ -1,0 +1,26 @@
+name: Releases
+
+on: 
+  push:
+    tags:
+    - '*'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - id: generate_message
+        name: Set Changelog Message
+        run: |
+          {
+            echo 'changelog<<EOF'
+            echo "$(python get_release_msg.py)"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - uses: ncipollo/release-action@v1
+        with:
+          body: ${{ steps.generate_message.outputs.changelog }}
