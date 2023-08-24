@@ -8,7 +8,7 @@ test:
     image: python:3
     stage: test
     script:
-        - pip3 install --upgrade pytest dotenv
+        - pip3 install --upgrade pytest python-dotenv
         - pip3 install --upgrade -r requirements.txt
         - python3 -m pytest src/tests/test.py --junitxml=report.xml
     artifacts:
