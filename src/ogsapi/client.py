@@ -89,7 +89,6 @@ class OGSClient:
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
-        self.sock = OGSSocket(self.credentials)
         self.credentials.user_id = self.user_vitals()
 
     # User Specific Resources: /me
@@ -534,9 +533,11 @@ class OGSClient:
         Args:
             callback_handler (Callable): Callback function to send socket events to.
         """
+        self.sock = OGSSocket(self.credentials)
         self.sock.callback_handler = callback_handler
         self.sock.connect()
 
     def socket_disconnect(self):
         """Disconnect from the socket. You will need to do this before exiting your program, Or else it will hang and require a keyboard interrupt."""
         self.sock.disconnect()
+        del self.sock
