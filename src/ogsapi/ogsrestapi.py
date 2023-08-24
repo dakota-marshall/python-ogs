@@ -82,14 +82,16 @@ class OGSRestAPI:
             method (str): HTTP method to use. Accepts GET, POST, PUT, DELETE
             endpoint (str): Endpoint to make request to
             params (dict, optional): Parameters to pass to the endpoint. Defaults to None.
+            payload (dict, optional): Payload to pass to the endpoint. Defaults to None.
             
         Returns:
             response (Callable): Returns the request response
         """
         method = method.upper()
-        url = f'{self.base_url}/api/{self.api_ver}{endpoint}'
+        url = f'{self.base_url}api/{self.api_ver}{endpoint}'
         headers = {
-            'Authorization' : f'Bearer {self.credentials.access_token}'
+            'Authorization' : f'Bearer {self.credentials.access_token}',
+            'Content-Type': 'application/json'
         }
 
         # Bail if method is invalid
@@ -100,7 +102,7 @@ class OGSRestAPI:
         logger.debug(f"Making {method} request to {url}")
         if method in ['POST', 'PUT']:
             try:
-                response = requests.request(method, url, headers=headers, params=params, payload=payload, timeout=20)
+                response = requests.request(method, url, headers=headers, params=params, json=payload, timeout=20)
             except requests.exceptions.RequestException as e:
                 raise OGSApiException(f"{method} Failed") from e
         else:
