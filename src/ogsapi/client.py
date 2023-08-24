@@ -395,7 +395,8 @@ class OGSClient:
         challenge_id = response['challenge']
         game_id = response['game']
         logger.success(f"Challenge created with challenge ID: {challenge_id} and game ID: {game_id}")
-        return challenge_id, game_id
+        challenge_details: dict = { 'challenge_id': challenge_id, 'game_id': game_id }
+        return challenge_details
 
     # Challenges
 
