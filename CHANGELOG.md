@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
 
+- Added additional tests for the REST API
+- Added support for using dotenv for loading credentials for testing
+- Added CI workflow for creating releases both in Gitlab and Github
 
 ## [1.1.2] - 2023-08-16
 
