@@ -172,14 +172,14 @@ class OGSClient:
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()["active_games"]
 
 
-    def user_games(self):
+    def user_games(self, page=1, page_size=10):
         """Get the user's games.
         
         Returns:
             response (dict): JSON response from the endpoint
         """
 
-        endpoint = '/me/games'
+        endpoint = f'/me/games?page={page}&page_size={page_size}'
         logger.info("Getting user games")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
