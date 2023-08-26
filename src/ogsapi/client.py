@@ -161,6 +161,17 @@ class OGSClient:
         logger.info(f"Updating user settings with the following payload: {payload}")
         return self.api.call_rest_endpoint('PUT', endpoint=endpoint, payload=payload).json()
 
+    def active_games(self, player_id: int | None = None) -> list:
+        """
+        Get the user's active games.
+        """
+        if player_id is None:
+            endpoint = "/ui/overview"
+        else:
+            endpoint = f"/players/{player_id}/full"
+        return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()["active_games"]
+
+
     def user_games(self):
         """Get the user's games.
         
