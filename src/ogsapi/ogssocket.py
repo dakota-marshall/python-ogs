@@ -56,6 +56,16 @@ class OGSSocket:
     def __del__(self):
         self.disconnect()
 
+    def enable_logging(self):
+        """Enable logging from the socket"""
+        logger.enable("engineio.client")
+        logger.enable("socketio.client")
+
+    def disable_logging(self):
+        """Disable logging from the socket"""
+        logger.disable("engineio.client")
+        logger.disable("socketio.client")
+
     @logger.catch
     def connect(self):
         """Connect to the socket"""

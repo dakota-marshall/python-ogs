@@ -187,3 +187,45 @@ ogs.sock.ping()
 See the [OGSSocket](/api/#src.ogsapi.ogssocket.OGSSocket) class for more information.
 
 
+## Logging
+
+The library uses the [Loguru](https://github.com/Delgan/loguru) logging module to handle all logging. Check out their documentation for more advanced logging config, but its highly flexible and pretty easy to setup and use. Here is a basic example that will log all messages of level `INFO` or higher to the console.
+
+!!! warning
+
+    Because loguru is setup to catch ExceptionErrors for debugging, the backtrace printouts can expose sensitive information. If you are using this in production, you should disable the backtrace printouts with `backtrace=False` to prevent this.
+
+```python
+from ogsapi.client import OGSClient
+from loguru import logger
+
+logger.remove()
+logger.add(sys.stdout, level="INFO")
+logger.enable("ogsapi")
+ogs = OGSClient(
+    client_id=client_id,
+    client_secret=client_secret,
+    username=username,
+    password=password
+  )
+```
+Its important to `.enable()` the `ogsapi` logger, otherwise you wont see any logs from the library. If you want to see you the logs from the socket, you can add `socketio.client`, to see the low level `engineio` calls, you can add `engineio.client`.
+
+```python
+from ogsapi.client import OGSClient
+from loguru import logger
+
+logger.remove()
+logger.add(sys.stdout, level="INFO")
+logger.enable("ogsapi")
+logger.enable("socketio.client")
+logger.enable("engineio.client")
+ogs = OGSClient(
+    client_id=client_id,
+    client_secret=client_secret,
+    username=username,
+    password=password
+  )
+```
+
+You can also just call the `enable_logging()` methods on both the `ogs` and the `ogs.sock` object.

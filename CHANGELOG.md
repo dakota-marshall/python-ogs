@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-08-28
+
+### Changed
+
+- Dont instantiate socket connection unless we need to
+- Disable loguru logging by default, require user to enable and configure it (#4)
+
+### Added
+
+- Added documentation on how to configure loguru (#4)
+
+### Fixed
+
+- Fixed `POST` requests to the REST API not working correctly due to using data instead of json
 
 ## [1.1.3] - 2023-08-24
 
@@ -181,6 +195,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 
 [unreleased]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.2...HEAD
+[1.2.0]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.3...v1.2.0
 [1.1.3]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.2...v1.1.3
 [1.1.2]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.1...v1.1.2
 [1.1.1]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.0...v1.1.1
