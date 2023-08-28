@@ -7,9 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
 - Dont instantiate socket connection unless we need to
 - Disable loguru logging by default, require user to enable and configure it (#4)
+
+### Added
+
 - Added documentation on how to configure loguru (#4)
+
+### Fixed
+
+- Fixed `POST` requests to the REST API not working correctly due to using data instead of json
 
 ## [1.1.3] - 2023-08-24
 
