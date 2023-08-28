@@ -20,6 +20,12 @@ from .ogssocket import OGSSocket
 from .ogsrestapi import OGSRestAPI
 from .ogs_api_exception import OGSApiException
 
+# Disable logging from ogsapi by default
+logger.disable("src.ogsapi")
+logger.disable("urllib3")
+logger.disable("engineio.client")
+logger.disable("socketio.client")
+
 class InterceptHandler(logging.Handler):
     """Intercepts the logs from SocketIO, EngineIO, and urllib and sends them to the logger"""
     def emit(self, record):
@@ -59,7 +65,6 @@ class OGSClient:
             client_secret=client_secret, 
             username=username, 
             password=password,
-            log_level='DEBUG'
             )
         Connecting to Websocket
         Connected to socket, authenticating
@@ -69,7 +74,6 @@ class OGSClient:
         client_secret (str): Client Secret from OGS
         username (str): Username of OGS account
         password (str): Password of OGS account
-        log_level (str, optional): Set the log level. Defaults to 'INFO'. Accepts 'TRACE', 'DEBUG', 'INFO', 'SUCCESS', 'WARNING', 'ERROR', 'CRITICAL'
         dev (bool, optional): Use the development API. Defaults to False.    
 
     Attributes:
@@ -78,18 +82,20 @@ class OGSClient:
         sock (OGSSocket): SocketIO connection to OGS
 
     """
-    def __init__(self, client_id, client_secret, username, password, log_level: str = 'INFO', log_file: str = None, dev: bool = False):
-
-        # Setup Logging
-        logger.remove()
-        logger.add(sys.stderr, level=log_level.upper())
-        if log_file is not None:
-            logger.add(log_file)
+    def __init__(self, client_id, client_secret, username, password, dev: bool = False):
 
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
         self.credentials.user_id = self.user_vitals()
+
+    def enable_logging(self):
+        """Enable logging from ogsapi"""
+        logger.enable("src.ogsapi")
+
+    def disable_logging(self):
+        """Disable logging from ogsapi"""
+        logger.disable("src.ogsapi")
 
     # User Specific Resources: /me
 

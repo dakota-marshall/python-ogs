@@ -1,5 +1,7 @@
 import dotenv
 import os
+import sys
+from loguru import logger
 from src.ogsapi.client import OGSClient
 from typing import Callable
 
@@ -37,14 +39,22 @@ class Game:
   def pass_turn(self):
     self.game.pass_turn()
 
+# Setup our logging if we want to log somewhere specific
+logger.remove()
+logger.add("/var/logs/ogsapi.log", rotation="1 MB", level="DEBUG", backtrace=False)
+logger.add(sys.stderr, level="DEBUG", backtrace=False)
+# Enable ogsapi logging to catch authentication errors (EXPOSES SECRETS TO LOGS)
+logger.enable("ogsapi")
+
 # Instantiate Client
 ogs = OGSClient(
     client_id=client_id,
     client_secret=client_secret,
     username=username,
-    password=password,
-    log_level='DEBUG'
+    password=password
   )
+
+# Enable 
 ogs.socket_connect(ogs_event_handler)
 game_id = 56202921
 

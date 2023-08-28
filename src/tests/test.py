@@ -38,7 +38,7 @@ class TestOGSClient(unittest.TestCase):
             self.fail("Failed to import OGSClient")
 
     def test_authentication(self):
-        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password, log_level='SUCCESS')
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
         self.assertIsNotNone(self.client.credentials.access_token)
         self.assertIsNotNone(self.client.credentials.refresh_token)
 
