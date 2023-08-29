@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dont instantiate socket connection unless we need to
 - Disable loguru logging by default, require user to enable and configure it (#4)
 
+### Removed
+
+- `log_level` argument from `OGSClient`
+
 ### Added
 
 - Added documentation on how to configure loguru (#4)
