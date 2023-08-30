@@ -56,18 +56,18 @@ class OGSSocket:
     def __del__(self):
         self.disconnect()
 
-    def enable_logging(self):
+    def enable_logging(self) -> None:
         """Enable logging from the socket"""
         logger.enable("engineio.client")
         logger.enable("socketio.client")
 
-    def disable_logging(self):
+    def disable_logging(self) -> None:
         """Disable logging from the socket"""
         logger.disable("engineio.client")
         logger.disable("socketio.client")
 
     @logger.catch
-    def connect(self):
+    def connect(self) -> None:
         """Connect to the socket"""
         self.socket_callbacks()
         logger.info("Connecting to Websocket")
@@ -90,11 +90,11 @@ class OGSSocket:
     #     self.client_callbacks[event]: OGSGame = callback
 
     # Listens to events received from the socket via the decorators, and calls the appropriate function
-    def socket_callbacks(self):
+    def socket_callbacks(self) -> None:
         """Set the callback functions for the socket"""
 
         @self.socket.on('connect')
-        def authenticate():
+        def authenticate() -> None:
             """Authenticate to the socket"""
             logger.success("Connected to Websocket, authenticating")
             self.socket.emit(event="authenticate", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.user_id, "username": self.credentials.username, "jwt": self.credentials.user_jwt})
@@ -102,12 +102,12 @@ class OGSSocket:
             logger.success("Authenticated to Websocket")
         
         @self.socket.on('hostinfo')
-        def on_hostinfo(data):
+        def on_hostinfo(data) -> None:
             """Called when hostinfo is received on the socket"""
             logger.debug(f"Got Hostinfo: {data}")
         
         @self.socket.on('net/pong')
-        def on_pong(data):
+        def on_pong(data) -> None:
             """Called when a pong is received on the socket"""
             now = time() * 1000
             latency = now - data["client"]
@@ -118,52 +118,52 @@ class OGSSocket:
             logger.debug(f"Got Pong: {data}")
         
         @self.socket.on('active_game')
-        def on_active_game(data):
+        def on_active_game(data) -> None:
             """Called when an active game is received on the socket"""
             logger.debug(f"Got Active Game: {data}")
             self.callback_handler(event_name="active_game", data=data)
 
         @self.socket.on('notification')
-        def on_notification(data):
+        def on_notification(data) -> None:
             """Called when a notification is received on the socket"""
             logger.debug(f"Got Notification: {data}")
             self.callback_handler(event_name="notification", data=data)
 
         @self.socket.on('ERROR')
-        def on_error(data):
+        def on_error(data) -> None:
             """Called when an error is received from the server"""
             logger.error(f"Got Error: {data}")
             self.callback_handler(event_name="ERROR", data=data)
 
         @self.socket.on('*')
-        def catch_all(event, data):
+        def catch_all(event, data) -> None:
             """Catch all for events"""
             logger.debug(f"Got Event: {event} with data: {data}")
             self.callback_handler(event_name=event, data=data)
 
     # Get info on connected server
-    def host_info(self):
+    def host_info(self) -> None:
         """Get the host info of the socket"""
         logger.info("Getting Host Info")
         self.socket.emit(event="hostinfo", namespace='/')
         
     
-    def ping(self):
+    def ping(self) -> None:
         """Ping the socket"""
         logger.info("Pinging Websocket")
         self.socket.emit(event="net/ping", data={"client": int(time() * 1000), "drift": self.clock_drift, "latency": self.clock_latency})
     
-    def notification_connect(self):
+    def notification_connect(self) -> None:
         """Connect to the notification socket"""
         logger.info("Connecting to Notification Websocket")
         self.socket.emit(event="notification/connect", data={"auth": self.credentials.notification_auth, "player_id": self.credentials.user_id, "username": self.credentials.username})
     
-    def chat_connect(self):
+    def chat_connect(self) -> None:
         """Connect to the chat socket"""
         logger.info("Connecting to Chat Websocket")
         self.socket.emit(event="chat/connect", data={"auth": self.credentials.chat_auth, "player_id": self.credentials.user_id, "username": self.credentials.username})
 
-    def game_connect(self, game_id: int, callback_handler: Callable = None):
+    def game_connect(self, game_id: int, callback_handler: Callable | None = None) -> OGSGame:
         """Connect to a game
         
         Args:
@@ -182,7 +182,7 @@ class OGSSocket:
 
         return self.games[game_id]
 
-    def game_disconnect(self, game_id: int):
+    def game_disconnect(self, game_id: int) -> None:
         """Disconnect from a game
         
         Args:
@@ -191,7 +191,7 @@ class OGSSocket:
         logger.info(f"Disconnecting from Game {game_id}")
         del self.games[game_id]
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Disconnect from the socket"""
         logger.info("Disconnecting from Websocket")
         self.socket.disconnect()
