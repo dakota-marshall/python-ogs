@@ -196,9 +196,11 @@ class OGSClient:
             response (dict): JSON response from the endpoint
         """
 
-        endpoint = f'/me/games?page={page}&page_size={page_size}'
+        endpoint = f'/me/games'
+        params = { 'page': page, 'page_size': page_size }
         logger.info("Getting user games")
-        return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
+        return self.api.call_rest_endpoint('GET', endpoint=endpoint, params=params).json()
+
 
     def user_friends(self, username: str = None):
         """Get the user's friends.
