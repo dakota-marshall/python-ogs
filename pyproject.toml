@@ -32,3 +32,9 @@ Homepage = "https://gitlab.com/dakota.marshall/ogs-python"
 Repository = "https://gitlab.com/dakota.marshall/ogs-python"
 Documentation = "https://ogs-python.dakotamarshall.net/"
 Changelog = "https://gitlab.com/dakota.marshall/ogs-python/-/commits/prod/"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ogsapi = ["py.typed"]
