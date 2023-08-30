@@ -21,6 +21,7 @@ from .ogsrestapi import OGSRestAPI
 from .ogs_api_exception import OGSApiException
 
 # Disable logging from ogsapi by default
+logger.disable("ogsapi")
 logger.disable("src.ogsapi")
 logger.disable("urllib3")
 logger.disable("engineio.client")
@@ -196,9 +197,9 @@ class OGSClient:
             response (dict): JSON response from the endpoint
         """
 
-        endpoint = f'/me/games'
+        endpoint = '/me/games'
         params = { 'page': page, 'page_size': page_size }
-        logger.info("Getting user games")
+        logger.info(f"Getting user games - page {page} with page size {page_size}")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint, params=params).json()
 
 
