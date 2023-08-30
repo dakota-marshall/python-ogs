@@ -170,7 +170,14 @@ class OGSClient:
     def active_games(self, player_id: int | None = None) -> list:
         """
         Get the user's active games.
+
+        Args:
+            player_id (int, optional): ID of player whos active games we want to retrieve.
+
+        Returns:
+            response (dict): JSON object containing players active games.
         """
+
         if player_id is None:
             endpoint = "/ui/overview"
         else:
@@ -178,8 +185,12 @@ class OGSClient:
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()["active_games"]
 
 
-    def user_games(self, page=1, page_size=10):
+    def user_games(self, page: int = 1, page_size: int = 10):
         """Get the user's games.
+
+        Args:
+            page (int): Page number of user games. Defaults to page 1
+            page_size (int): Number of games per page. Defaults to 10
         
         Returns:
             response (dict): JSON response from the endpoint

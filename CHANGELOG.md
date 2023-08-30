@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `active_games()` method to `OGSClient` to see your currently active games [@benjaminpjones](https://gitlab.com/benjaminpjones)
+- Added `page` and `page_size` args to `user_games()` to be able to effectively use the method [@benjaminpjones](https://gitlab.com/benjaminpjones)
+
 ## [1.2.0] - 2023-08-28
 
 ### Changed
