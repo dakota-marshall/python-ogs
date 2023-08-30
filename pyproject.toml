@@ -31,7 +31,7 @@ classifiers = [
 Homepage = "https://gitlab.com/dakota.marshall/ogs-python"
 Repository = "https://gitlab.com/dakota.marshall/ogs-python"
 Documentation = "https://ogs-python.dakotamarshall.net/"
-Changelog = "https://gitlab.com/dakota.marshall/ogs-python/-/commits/prod/"
+Changelog = "https://gitlab.com/dakota.marshall/ogs-python/-/blob/prod/CHANGELOG.md"
 
 [tool.setuptools.packages.find]
 where = ["src"]
