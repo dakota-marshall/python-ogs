@@ -13,9 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `page` and `page_size` args to `user_games()` to be able to effectively use the method [@benjaminpjones](https://gitlab.com/benjaminpjones)
 - `py.typed` file to package directory to allow for downstream type-checking (#5) [@benjaminpjones](https://gitlab.com/benjaminpjones)
 
-### Fixed
+## [1.2.1] - 2023-08-30
 
 - Fixed loguru not disabling the correct logger, causing the `OGSClient` to still log to console even when `logger.enable("ogsapi")` was never called.
+
+### Fixed
 
 ## [1.2.0] - 2023-08-28
 
@@ -208,7 +210,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release
 
-[unreleased]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.2...HEAD
+[unreleased]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.2.1...HEAD
+[1.2.1]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.2.0...v1.2.1
 [1.2.0]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.3...v1.2.0
 [1.1.3]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.2...v1.1.3
 [1.1.2]: https://gitlab.com/dakota.marshall/ogs-python/-/compare/v1.1.1...v1.1.2
