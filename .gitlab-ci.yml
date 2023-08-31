@@ -10,7 +10,7 @@ test:
     script:
         - pip3 install --upgrade pytest python-dotenv mypy types-requests
         - pip3 install --upgrade -r requirements.txt
-        - mypy src/ogsapi/. --junit-xml typetest.xml
+        - mypy --non-interactive src/ogsapi/. --junit-xml typetest.xml
         - python3 -m pytest src/tests/test.py --junitxml=report.xml
     artifacts:
         when: always
