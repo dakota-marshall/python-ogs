@@ -26,11 +26,11 @@ class ByoyomiTime:
     period_time (int): Time of each period.
   """
 
-  thinking_time: int = None
-  periods: int = None
-  period_time: int = None
+  thinking_time: int | None = None
+  periods: int | None = None
+  period_time: int | None = None
 
-  def update(self, new_values: dict):
+  def update(self, new_values: dict) -> None:
     """Update the Byoyomi time data with new values"""
     for key, value in new_values.items():
       if hasattr(self, key):
@@ -46,10 +46,10 @@ class FischerTime:
     increment (int): Time added to the clock after each move.
   """
 
-  thinking_time: int = None
-  skip_bonus: int = None
+  thinking_time: int | None = None
+  skip_bonus: int | None = None
 
-  def update(self, new_values: dict):
+  def update(self, new_values: dict) -> None:
     """Update the Fischer time data with new values
     
     Args:
@@ -74,21 +74,21 @@ class OGSGameClock:
     black_time (ByoyomiTime or FischerTime): Black players time control data
     """
 
-  system: str = None
-  current_player: str = None
-  last_move: str = None
-  expiration: int = None
-  received: int = None
-  latency_when_received: int = None
-  white_time: ByoyomiTime or FischerTime = None
-  black_time: ByoyomiTime or FischerTime = None
+  system: str | None = None
+  current_player: str | None = None
+  last_move: str | None = None
+  expiration: int | None = None
+  received: int | None = None
+  latency_when_received: int | None = None
+  white_time: ByoyomiTime | FischerTime | None = None
+  black_time: ByoyomiTime | FischerTime | None = None
   
-  def __post_init__(self):
+  def __post_init__(self) -> None:
     # TODO: This expects us to receive the clock AFTER the game data, 
     # which may not always the case  
     self.set_timecontrol()
 
-  def update(self, new_values: dict):
+  def update(self, new_values: dict) -> None:
     """Update the game clock data with new values
     
     Args:
@@ -105,7 +105,7 @@ class OGSGameClock:
     logger.debug(f"Updated game clock data: {self}")
     self.set_timecontrol()
 
-  def set_timecontrol(self):
+  def set_timecontrol(self) -> None:
     """Set the time control attributes based on the time control system"""
     for player in [self.white_time, self.black_time]:
       if self.system == "byoyomi" and player is not ByoyomiTime:

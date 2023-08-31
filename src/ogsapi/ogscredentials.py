@@ -34,9 +34,9 @@ class OGSCredentials:
     client_secret: str
     username: str
     password: str
-    access_token: str = None
-    refresh_token: str = None
-    user_id: str = None
-    chat_auth: str = None
-    user_jwt: str = None
-    notification_auth: str = None
+    access_token: str | None = None
+    refresh_token: str | None = None
+    user_id: str | None = None
+    chat_auth: str | None = None
+    user_jwt: str | None = None
+    notification_auth: str | None = None

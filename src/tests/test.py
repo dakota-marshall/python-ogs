@@ -69,6 +69,24 @@ class TestOGSClient(unittest.TestCase):
         self.assertIsInstance(games['results'][0], dict)
         self.assertIsInstance(games['results'][0]['id'], int)
 
+    def test_user_games(self):
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
+        games = self.client.user_games()
+        self.assertIsInstance(games, dict)
+        self.assertIsInstance(games['results'], list)
+        self.assertIsInstance(games['results'][0], dict)
+        self.assertIsInstance(games['results'][0]['id'], int)
+
+    def test_active_games(self):
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
+        games = self.client.active_games()
+        self.assertIsInstance(games, list)
+
+    def test_active_games_id(self):
+        self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
+        games = self.client.active_games(1)
+        self.assertIsInstance(games, list)
+
 
 if __name__ == '__main__':
     unittest.main()

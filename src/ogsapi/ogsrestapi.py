@@ -48,7 +48,7 @@ class OGSRestAPI:
 
     # TODO: All these internal functions should be moved into private functions
     @logger.catch
-    def authenticate(self):
+    def authenticate(self) -> None:
         """Authenticate with the OGS API and save the access token and user ID."""
 
         endpoint = f'{self.base_url}/oauth2/token/'
@@ -75,7 +75,7 @@ class OGSRestAPI:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
     @logger.catch
-    def call_rest_endpoint(self, method: str, endpoint: str, params: dict = None, payload: dict = None):
+    def call_rest_endpoint(self, method: str, endpoint: str, params: dict | None = None, payload: dict | None = None) -> requests.Response:
         """Make a request to the OGS REST API.
         
         Args:
@@ -117,7 +117,7 @@ class OGSRestAPI:
         raise OGSApiException(f"{response.status_code}: {response.reason}")
 
     @logger.catch
-    def get_auth_data(self):
+    def get_auth_data(self) -> None:
         """Get the auth data from the OGS API and save it to the credentials object for use in the socket connection."""
         logger.info("Getting auth data from OGS API")
         auth_data = self.call_rest_endpoint('GET', '/ui/config').json()

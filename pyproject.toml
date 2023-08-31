@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ogsapi"
-version = "1.2.0"
+version = "1.3.0"
 license = {file = "LICENSE"}
 authors = [
   { name="Dakota Marshall", email="me@dakotamarshall.net" },
@@ -31,4 +31,10 @@ classifiers = [
 Homepage = "https://gitlab.com/dakota.marshall/ogs-python"
 Repository = "https://gitlab.com/dakota.marshall/ogs-python"
 Documentation = "https://ogs-python.dakotamarshall.net/"
-Changelog = "https://gitlab.com/dakota.marshall/ogs-python/-/commits/prod/"
+Changelog = "https://gitlab.com/dakota.marshall/ogs-python/-/blob/prod/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ogsapi = ["py.typed"]

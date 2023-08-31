@@ -15,12 +15,14 @@
 import sys
 import logging
 from loguru import logger
+from typing import Callable, Any
 from .ogscredentials import OGSCredentials
 from .ogssocket import OGSSocket
 from .ogsrestapi import OGSRestAPI
 from .ogs_api_exception import OGSApiException
 
 # Disable logging from ogsapi by default
+logger.disable("ogsapi")
 logger.disable("src.ogsapi")
 logger.disable("urllib3")
 logger.disable("engineio.client")
@@ -28,7 +30,7 @@ logger.disable("socketio.client")
 
 class InterceptHandler(logging.Handler):
     """Intercepts the logs from SocketIO, EngineIO, and urllib and sends them to the logger"""
-    def emit(self, record):
+    def emit(self, record) -> None:
         """Parse the log and emit to the logger"""
         # Get corresponding Loguru level if it exists.
         try:
@@ -39,7 +41,7 @@ class InterceptHandler(logging.Handler):
         # Find caller from where originated the logged message.
         frame, depth = sys._getframe(6), 6
         while frame and frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back
+            frame = frame.f_back # type: ignore[assignment]
             depth += 1
 
         # If log is from engineio.client set to TRACE and if from socketio.client set to DEBUG
@@ -87,19 +89,19 @@ class OGSClient:
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
-        self.credentials.user_id = self.user_vitals()
+        self.credentials.user_id = self.user_vitals()['id']
 
-    def enable_logging(self):
+    def enable_logging(self) -> None:
         """Enable logging from ogsapi"""
         logger.enable("src.ogsapi")
 
-    def disable_logging(self):
+    def disable_logging(self) -> None:
         """Disable logging from ogsapi"""
         logger.disable("src.ogsapi")
 
     # User Specific Resources: /me
 
-    def user_vitals(self):
+    def user_vitals(self) -> dict:
         """Get the user's vitals.
         
         Returns:
@@ -110,7 +112,7 @@ class OGSClient:
         logger.info("Getting user vitals")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
-    def user_settings(self):
+    def user_settings(self) -> dict:
         """Get the user's settings.
         
         Returns:
@@ -122,14 +124,14 @@ class OGSClient:
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
     def update_user_settings(
-            self, username: str = None,
-            first_name: str = None,
-            last_name: str = None,
-            private_name: bool = None,
-            country: str = None,
-            website: str = None,
-            about: str = None
-        ):
+            self, username: str | None = None,
+            first_name: str | None = None,
+            last_name: str | None = None,
+            private_name: bool | None = None,
+            country: str | None = None,
+            website: str | None = None,
+            about: str | None = None
+        ) -> dict:
         """Update the user's settings.
         
         Args:
@@ -146,7 +148,7 @@ class OGSClient:
         """
 
         # This is a bit of a mess, but it works, should be refactored
-        payload = {}
+        payload: dict[str, Any] = {}
         if username is not None:
             payload['username'] = username
         if first_name is not None:
@@ -167,18 +169,42 @@ class OGSClient:
         logger.info(f"Updating user settings with the following payload: {payload}")
         return self.api.call_rest_endpoint('PUT', endpoint=endpoint, payload=payload).json()
 
-    def user_games(self):
+    def active_games(self, player_id: int | None = None) -> list[dict]:
+        """
+        Get the user's active games.
+
+        Args:
+            player_id (int, optional): ID of player whos active games we want to retrieve.
+
+        Returns:
+            response (list[dict]): JSON object containing players active games.
+        """
+
+        if player_id is None:
+            endpoint = "/ui/overview"
+        else:
+            endpoint = f"/players/{player_id}/full"
+        return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()["active_games"]
+
+
+    def user_games(self, page: int = 1, page_size: int = 10) -> dict:
         """Get the user's games.
+
+        Args:
+            page (int): Page number of user games. Defaults to page 1
+            page_size (int): Number of games per page. Defaults to 10
         
         Returns:
             response (dict): JSON response from the endpoint
         """
 
         endpoint = '/me/games'
-        logger.info("Getting user games")
-        return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
+        params = { 'page': page, 'page_size': page_size }
+        logger.info(f"Getting user games - page {page} with page size {page_size}")
+        return self.api.call_rest_endpoint('GET', endpoint=endpoint, params=params).json()
 
-    def user_friends(self, username: str = None):
+
+    def user_friends(self, username: str | None = None) -> dict:
         """Get the user's friends.
         
         Args:
@@ -192,7 +218,7 @@ class OGSClient:
         logger.info("Getting user friends")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : username}).json()
 
-    def send_friend_request(self, username: str):
+    def send_friend_request(self, username: str) -> dict:
         """Send a friend request to a user.
         
         Args:
@@ -210,7 +236,7 @@ class OGSClient:
         logger.info(f"Sending friend request to {username} - {player_id}")
         return self.api.call_rest_endpoint('POST', endpoint=endpoint, payload=payload).json()
 
-    def remove_friend(self, username: str):
+    def remove_friend(self, username: str) -> dict:
         """Remove a friend.
         
         Args:
@@ -231,7 +257,7 @@ class OGSClient:
 
     # Players: /players
 
-    def get_player(self, player_username):
+    def get_player(self, player_username: str) -> dict:
         """Get a player by username.
         
         Args:
@@ -245,7 +271,7 @@ class OGSClient:
         logger.info(f"Getting player {player_username}")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
     
-    def get_player_games(self, player_username):
+    def get_player_games(self, player_username: str) -> dict:
         """Get a player's games by username.
         
         Args:
@@ -260,7 +286,7 @@ class OGSClient:
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
     # TODO: This needs to be using a dataclass to make challenge customization easier
-    def create_challenge(self, player_username: str = None, **game_settings):
+    def create_challenge(self, player_username: str | None = None, **game_settings) -> tuple[int, int]:
         """Create either an open challenge or a challenge to a specific player.
         The time control settings are built depending on which time control is used.
         Make sure that you pass the correct time control settings for the time control you want to use.
@@ -405,11 +431,11 @@ class OGSClient:
     # Challenges
 
     # TODO: Change these to use the 'challenger' parameter instead of looping through all challenges
-    def received_challenges(self):
+    def received_challenges(self) -> list[dict]:
         """Get all received challenges.
         
         Returns:
-            challenges (dict): JSON response from the endpoint
+            challenges (list[dict]): JSON response from the endpoint
         """
 
         endpoint = '/me/challenges/'
@@ -423,11 +449,11 @@ class OGSClient:
         return received_challenges
 
     # TODO: Same as above
-    def sent_challenges(self):
+    def sent_challenges(self) -> list[dict]:
         """Get all sent challenges.
         
         Returns:
-            challenges (dict): JSON response from the endpoint
+            challenges (list[dict]): JSON response from the endpoint
         """
         endpoint = '/me/challenges'
         sent_challenges = []
@@ -439,7 +465,7 @@ class OGSClient:
                 sent_challenges.append(challenge)
         return sent_challenges
 
-    def accept_challenge(self, challenge_id):
+    def accept_challenge(self, challenge_id: str) -> dict:
         """Accept a challenge.
         
         Args:
@@ -453,7 +479,7 @@ class OGSClient:
         logger.info(f"Accepting challenge {challenge_id}")
         return self.api.call_rest_endpoint('POST', endpoint=endpoint,payload={}).json()
     
-    def decline_challenge(self, challenge_id):
+    def decline_challenge(self, challenge_id: str) -> dict:
         """Decline a challenge.
         
         Args:
@@ -467,7 +493,7 @@ class OGSClient:
         logger.info(f"Declining challenge {challenge_id}")
         return self.api.call_rest_endpoint('DELETE', endpoint=endpoint, payload={}).json()
 
-    def challenge_details(self, challenge_id):
+    def challenge_details(self, challenge_id: str) -> dict:
         """Get details of a challenge.
         
         Args:
@@ -481,7 +507,7 @@ class OGSClient:
         logger.info(f"Getting challenge details for {challenge_id}")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
-    def game_details(self, game_id):
+    def game_details(self, game_id: str) -> dict:
         """Get details of a game.
         
         Args:
@@ -494,7 +520,7 @@ class OGSClient:
         logger.info(f"Getting game details for {game_id}")
         return self.api.call_rest_endpoint('GET', endpoint).json()
 
-    def game_reviews(self, game_id):
+    def game_reviews(self, game_id: str) -> dict:
         """Get reviews of a game.
         
         Args:
@@ -507,7 +533,7 @@ class OGSClient:
         logger.info(f"Getting game reviews for {game_id}")
         return self.api.call_rest_endpoint('GET', endpoint).json()
 
-    def game_png(self, game_id):
+    def game_png(self, game_id: str) -> bytes:
         """Get PNG of a game.
         
         Args:
@@ -520,7 +546,7 @@ class OGSClient:
         logger.info(f"Getting game PNG for {game_id}")
         return self.api.call_rest_endpoint('GET', endpoint).content
 
-    def game_sgf(self, game_id):
+    def game_sgf(self, game_id: str) -> str:
         """Get SGF of a game.
         
         Args:  
@@ -533,7 +559,7 @@ class OGSClient:
         logger.info(f"Getting game SGF for {game_id}")
         return self.api.call_rest_endpoint('GET', endpoint).text
 
-    def socket_connect(self, callback_handler):
+    def socket_connect(self, callback_handler: Callable) -> None:
         """Connect to the socket.
         
         Args:
@@ -543,7 +569,7 @@ class OGSClient:
         self.sock.callback_handler = callback_handler
         self.sock.connect()
 
-    def socket_disconnect(self):
+    def socket_disconnect(self) -> None:
         """Disconnect from the socket. You will need to do this before exiting your program, Or else it will hang and require a keyboard interrupt."""
         self.sock.disconnect()
         del self.sock
