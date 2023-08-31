@@ -15,7 +15,7 @@
 import sys
 import logging
 from loguru import logger
-from typing import Callable
+from typing import Callable, Any
 from .ogscredentials import OGSCredentials
 from .ogssocket import OGSSocket
 from .ogsrestapi import OGSRestAPI
@@ -41,7 +41,7 @@ class InterceptHandler(logging.Handler):
         # Find caller from where originated the logged message.
         frame, depth = sys._getframe(6), 6
         while frame and frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back
+            frame = frame.f_back # type: ignore[assignment]
             depth += 1
 
         # If log is from engineio.client set to TRACE and if from socketio.client set to DEBUG
@@ -89,7 +89,7 @@ class OGSClient:
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
         self.api = OGSRestAPI(self.credentials,dev=dev)
-        self.credentials.user_id = self.user_vitals()
+        self.credentials.user_id = self.user_vitals()['id']
 
     def enable_logging(self) -> None:
         """Enable logging from ogsapi"""
@@ -148,7 +148,7 @@ class OGSClient:
         """
 
         # This is a bit of a mess, but it works, should be refactored
-        payload = {}
+        payload: dict[str, Any] = {}
         if username is not None:
             payload['username'] = username
         if first_name is not None:
@@ -431,11 +431,11 @@ class OGSClient:
     # Challenges
 
     # TODO: Change these to use the 'challenger' parameter instead of looping through all challenges
-    def received_challenges(self) -> dict:
+    def received_challenges(self) -> list[dict]:
         """Get all received challenges.
         
         Returns:
-            challenges (dict): JSON response from the endpoint
+            challenges (list[dict]): JSON response from the endpoint
         """
 
         endpoint = '/me/challenges/'
@@ -449,11 +449,11 @@ class OGSClient:
         return received_challenges
 
     # TODO: Same as above
-    def sent_challenges(self) -> dict:
+    def sent_challenges(self) -> list[dict]:
         """Get all sent challenges.
         
         Returns:
-            challenges (dict): JSON response from the endpoint
+            challenges (list[dict]): JSON response from the endpoint
         """
         endpoint = '/me/challenges'
         sent_challenges = []

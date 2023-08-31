@@ -15,7 +15,7 @@
 
 from typing import Callable
 from time import sleep, time
-import socketio
+import socketio # type: ignore[import]
 from loguru import logger
 from .ogs_api_exception import OGSApiException
 from .ogscredentials import OGSCredentials
@@ -44,10 +44,10 @@ class OGSSocket:
         # Clock Settings
         self.clock_drift = 0.0
         self.clock_latency = 0.0
-        self.last_ping = 0
+        self.last_ping = 0.0
         self.last_issued_ping = 0
         # Dict of connected game objects
-        self.games = {}
+        self.games: dict[int, OGSGame] = {}
         # Socket level callbacks
         self.callback_handler = lambda event_name, data: None
         self.credentials = credentials

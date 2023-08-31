@@ -14,6 +14,7 @@
 
 from typing import Callable
 from loguru import logger
+import socketio # type: ignore[import]
 from .ogs_api_exception import OGSApiException
 from .ogscredentials import OGSCredentials
 from .ogsgamedata import OGSGameData
@@ -37,7 +38,7 @@ class OGSGame:
 
     """
     
-    def __init__(self, game_socket: Callable, credentials: OGSCredentials, game_id, callback_handler: Callable):
+    def __init__(self, game_socket: socketio.Client, credentials: OGSCredentials, game_id, callback_handler: Callable):
         self.socket = game_socket
         self.game_data = OGSGameData(game_id=game_id)
         self.clock = OGSGameClock()

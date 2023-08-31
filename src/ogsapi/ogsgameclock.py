@@ -79,7 +79,7 @@ class OGSGameClock:
   last_move: str | None = None
   expiration: int | None = None
   received: int | None = None
-  latency_when_received: int = None
+  latency_when_received: int | None = None
   white_time: ByoyomiTime | FischerTime | None = None
   black_time: ByoyomiTime | FischerTime | None = None
   
