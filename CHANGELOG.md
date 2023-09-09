@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added dataclass for OGS Challenges to allow for easy challenge creation
+- Added `send_created_challenge` method to `OGSClient` to send the created challenge object to the API
+
+### Changed
+
+- Updated `create_challenge` method to use the new OGSChallenge dataclass and return said object
+
 ## [1.3.0] - 2023-08-30
 
 ### Added

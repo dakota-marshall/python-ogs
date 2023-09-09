@@ -92,27 +92,32 @@ ogs.get_player('Bone-A Lisa') # (1)
 
 1. The username is case sensitive.
 
-If you want to create a challenge, you can use the [create_challenge()](/api/#src.ogsapi.client.OGSClient.create_challenge) method to create either an open or direct challenge. Here is an example of creating a direct challenge:
+If you want to create a challenge, you can use the [create_challenge()](/api/#src.ogsapi.client.OGSClient.create_challenge) method to create either an open or direct challenge. The method returns an `OGSChallenge` object. Here is an example of creating a direct challenge:
 
 ```python
-ogs.create_challenge(player_username="Bone-A Lisa", 
-  ruleset="japanese", 
-  time_control="fischer", # (1)
-  fisher_time_initial_time=300, 
-  fischer_time_increment=0, 
-  ranked=True, 
-  handicap=0, 
-  komi=6.5, 
-  width=19, 
-  height=19
-)
+challenge = ogs.create_challenge()
+challenge.game.set_time_control('fisher')
+challenge.game.time_control_parameters.speed = 'live'
+challenge.game.time_control_parameters.main_time = 600
+challenge.game.time_control_parameters.increment = 10
+challenge.game.time_control_parameters.max_time = 1200
+challenge.game.ranked = True
+challenge.game.rules = 'chinese'
 ```
 
-1. Selecting the time control will automatically set the time control parameters. For example, if you select `fischer`, the `main_time` and `increment` parameters will be used. If you select `byoyomi`, the `period_time` and `periods` parameters will be used.
+Once we have the settings correct, we can send the challenge to a player, or as an open challenge via the [send_created_challenge()](/api/#src.ogsapi.client.OGSClient.send_created_challenge) method:
+
+```python
+# Send to a player
+ogs.send_created_challenge(challenge, 'Bone-A Lisa')
+
+# Send as an open challenge
+ogs.send_created_challenge(challenge)
+```
 
 ```bash
 Challenging player: Bone-A Lisa - 1010740
-(20328495, 53331333)
+{'challenge_id': 21721863, 'game_id': 56914951}
 ```
 
 This gives us back the challenge ID and the game ID. The challenge ID is used to accept the challenge, and the game ID is used to get the game information.
