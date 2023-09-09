@@ -25,12 +25,12 @@ class Player:
     professional (bool): Whether the player is a professional or not.
     id (int): ID of the player.
   """
-  username: str = None
-  rank: str = None
-  professional: bool = None
-  id: int = None
+  username: str | None = None
+  rank: str | None = None
+  professional: bool | None = None
+  id: int | None = None
 
-  def update(self, new_values: dict):
+  def update(self, new_values: dict) -> None:
     """Update the player data with new values"""
     for key, value in new_values.items():
       if hasattr(self, key):
@@ -51,15 +51,15 @@ class TimeControl:
     max_time (int): Maximum time on the clock.
   """
 
-  system: str = None
-  time_control: str = None
-  speed: str = None
-  pause_on_weekends: bool = None
-  time_increment: int = None
-  initial_time: int = None
-  max_time: int = None
+  system: str | None = None
+  time_control: str | None = None
+  speed: str | None = None
+  pause_on_weekends: bool | None = None
+  time_increment: int | None = None
+  initial_time: int | None = None
+  max_time: int | None = None
 
-  def update(self, new_values: dict):
+  def update(self, new_values: dict) -> None:
     """Update the player data with new values"""
     for key, value in new_values.items():
       if hasattr(self, key):
@@ -93,27 +93,27 @@ class OGSGameData:
   """
 
   game_id: int
-  game_name: str = None
-  private: bool = None
+  game_name: str | None = None
+  private: bool | None = None
   white_player: Player = dataclasses.field(default_factory=Player)
   black_player: Player = dataclasses.field(default_factory=Player)
-  ranked: bool = None
-  handicap: int = None
-  komi: float = None
-  width: int = None
-  height: int = None
-  rules: str = None
+  ranked: bool | None = None
+  handicap: int | None = None
+  komi: float | None = None
+  width: int | None = None
+  height: int | None = None
+  rules: str | None = None
   time_control: TimeControl = dataclasses.field(default_factory=TimeControl)
-  phase: str = None
+  phase: str | None = None
   moves: list[str] = dataclasses.field(default_factory=list)
   initial_state: dict = dataclasses.field(default_factory= lambda: {
     "black": None,
     "white": None
   })
-  start_time: int = None
-  latency: int = None
+  start_time: int | None = None
+  latency: int | None = None
 
-  def update(self, new_values: dict):
+  def update(self, new_values: dict) -> None:
     """Update the game data with new values
     
     Args:
