@@ -288,7 +288,7 @@ class OGSClient:
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
     # TODO: This needs to be using a dataclass to make challenge customization easier
-    def create_challenge(self, player_username: str | None = None, **game_settings) -> tuple[int, int]:
+    def create_challenge(self, player_username: str | None = None, **game_settings) -> OGSChallenge:
         """Create either an open challenge or a challenge to a specific player.
         The time control settings are built depending on which time control is used.
         Make sure that you pass the correct time control settings for the time control you want to use.

@@ -81,13 +81,13 @@ class OGSGameData:
     komi_auto: str = 'automatic'
     komi: float = 6.5
     disable_analysis: bool = False
-    initial_state: str = None
+    initial_state: str | None = None
     private: bool = False
     rengo: bool = False
     rengo_casual_mode: bool = False
     time_control: str = "byoyomi"
     pause_on_weekends: bool = False
-    time_control_parameters: ByoyomiTimeControlParameters = dataclasses.field(default_factory=ByoyomiTimeControlParameters)
+    time_control_parameters: ByoyomiTimeControlParameters | FischerTimeControlParameters = dataclasses.field(default_factory=ByoyomiTimeControlParameters)
 
     def __post_init__(self):
         if isinstance(self.time_control_parameters, dict):
