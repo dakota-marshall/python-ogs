@@ -10,9 +10,9 @@ class FischerTimeControlParameters:
         speed (str): Speed of the game. EX: "correspondence", "live"
         time_control (str): Time control of the game. EX: "fischer", "byoyomi"
         pause_on_weekends (bool): Whether or not to pause on weekends. Defaults to False.
-        initial_time (int): Initial time of the game. Defaults to 900.
-        max_time (int): Maximum time of the game. Defaults to 1800.
-        time_increment (int): Time increment of the game. Defaults to 30.
+        initial_time (int): Initial time of the game in seconds. Defaults to 900.
+        max_time (int): Maximum time of the game in seconds. Defaults to 1800.
+        time_increment (int): Time increment of the game in seconds. Defaults to 30.
     """
 
     system: str = 'fischer'
@@ -32,8 +32,8 @@ class ByoyomiTimeControlParameters:
         speed (str): Speed of the game. EX: "correspondence", "live"
         time_control (str): Time control of the game. EX: "fischer", "byoyomi"
         pause_on_weekends (bool): Whether or not to pause on weekends. Defaults to False.
-        main_time (int): Main time of the game. Defaults to 2400.
-        period_time (int): Period time of the game. Defaults to 30.
+        main_time (int): Main time of the game in seconds. Defaults to 2400.
+        period_time (int): Period time of the game in seconds. Defaults to 30.
         periods (int): Number of periods of the game. Defaults to 5.
         periods_min (int): Minimum number of periods of the game. Defaults to 1.
         periods_max (int): Maximum number of periods of the game. Defaults to 300.
@@ -90,18 +90,18 @@ class OGSGameData:
     time_control_parameters: ByoyomiTimeControlParameters = dataclasses.field(default_factory=ByoyomiTimeControlParameters)
 
     def __post_init__(self):
-      if isinstance(self.time_control_parameters, dict):
-        logger.debug("Creating TimeControl object from dict")
-        time_control_parameters = self.time_control_parameters
-        match time_control_parameters['time_control']:
-            case "fischer":
-                self.time_control = "fischer"
-                logger.debug("Using FischerTimeControlParameters")
-                self.time_control_parameters = FischerTimeControlParameters(**time_control_parameters)
-            case "byoyomi":
-                self.time_control = "byoyomi"
-                logger.debug("Using ByoyomiTimeControlParameters")
-                self.time_control_parameters = ByoyomiTimeControlParameters(**time_control_parameters)
+        if isinstance(self.time_control_parameters, dict):
+            logger.debug("Creating TimeControl object from dict")
+            time_control_parameters = self.time_control_parameters
+            match time_control_parameters['time_control']:
+                case "fischer":
+                    self.time_control = "fischer"
+                    logger.debug("Using FischerTimeControlParameters")
+                    self.time_control_parameters = FischerTimeControlParameters(**time_control_parameters)
+                case "byoyomi":
+                    self.time_control = "byoyomi"
+                    logger.debug("Using ByoyomiTimeControlParameters")
+                    self.time_control_parameters = ByoyomiTimeControlParameters(**time_control_parameters)
 
     def set_time_control(self, time_control: str):
         """Set the time control of the game. Overwrites any existing time control parameters.
@@ -144,6 +144,6 @@ class OGSChallenge:
 
     def __post_init__(self):
         if isinstance(self.game, dict):
-          logger.debug("Creating OGSGameData object from dict")
-          game_data = self.game
-          self.game = OGSGameData(**game_data)
+            logger.debug("Creating OGSGameData object from dict")
+            game_data = self.game
+            self.game = OGSGameData(**game_data)
