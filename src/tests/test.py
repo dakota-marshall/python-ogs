@@ -17,6 +17,7 @@ import unittest
 import os
 import dotenv
 from src.ogsapi.client import OGSClient
+from src.ogsapi.ogsplayer import OGSPlayer
 
 class TestOGSClient(unittest.TestCase):
 
@@ -58,7 +59,7 @@ class TestOGSClient(unittest.TestCase):
     def test_get_player(self):
         self.client = OGSClient(self.client_id, self.client_secret, self.username, self.password)
         user = self.client.get_player(self.username)
-        self.assertIsInstance(user, dict)
+        self.assertIsInstance(user, OGSPlayer)
         self.assertEqual(user['username'], self.username)
     
     def test_get_player_games(self):
