@@ -14,6 +14,10 @@ class OverallRating:
     deviation: float
     volatility: float
 
+    # Make dataclass subscriptable for backwards compatibility
+    def __getitem__(self, item):
+        return getattr(self, item)
+
 @dataclasses.dataclass
 class PlayerRatings:
     """OGS Player Ratings Object
@@ -30,6 +34,10 @@ class PlayerRatings:
         if isinstance(self.overall, dict):
             overall_data = self.overall
             self.overall = OverallRating(**overall_data)
+
+    # Make dataclass subscriptable for backwards compatibility
+    def __getitem__(self, item):
+        return getattr(self, item)
 
 @dataclasses.dataclass
 class OGSPlayer:
@@ -58,5 +66,9 @@ class OGSPlayer:
         if isinstance(self.ratings, dict):
             ratings_data = self.ratings
             self.ratings = PlayerRatings(**ratings_data)
+
+    # Make dataclass subscriptable for backwards compatibility
+    def __getitem__(self, item):
+        return getattr(self, item)
 
 
