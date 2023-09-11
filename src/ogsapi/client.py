@@ -258,11 +258,12 @@ class OGSClient:
 
     # Players: /players
 
-    def get_player(self, player_username: str) -> OGSPlayer:
-        """Get a player by username.
+    def get_player(self, player_username: str | None = None, player_id: int | None = None) -> OGSPlayer:
+        """Get a player by username by either username or ID.
         
         Args:
-            player_username (str): Username of the player to get.
+            player_username (str | None): Username of the player to get.
+            player_id (int | None): ID of the player to get.
         
         Returns:
             player_data (OGSPlayer): Player data returned from the endpoint
@@ -270,7 +271,21 @@ class OGSClient:
 
         endpoint = '/players/'
         logger.info(f"Getting player {player_username}")
-        player_data = self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
+        if player_username is None and player_id is None:
+            logger.error("You must provide either a player username or player ID")
+            raise OGSApiException("You must provide either a player username or player ID")
+        
+        elif player_username is None and player_id is not None:
+            logger.debug(f"Getting player with ID {player_id}")
+            player_data = self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'id' : player_id}).json()['results'][0]
+
+        elif player_username is not None and player_id is None:
+            logger.debug(f"Getting player with username {player_username}")
+            player_data = self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
+
+        else:
+            logger.error("Unknown error while getting player")
+            raise OGSApiException("Unknown error while getting player.")
 
         return OGSPlayer(**player_data)
 
