@@ -1,0 +1,74 @@
+{
+  "id": 1010740,
+  "username": "Bone-A Lisa",
+  "ratings": {
+    "9x9": {
+      "rating": 1176.0944996422345,
+      "deviation": 82.71551927629883,
+      "volatility": 0.059990990584312606
+    },
+    "live": {
+      "rating": 982.2065696521781,
+      "deviation": 79.92093341230586,
+      "volatility": 0.06000679646913558
+    },
+    "13x13": {
+      "rating": 935.4020899382218,
+      "deviation": 133.80303670740366,
+      "volatility": 0.060001353921150344
+    },
+    "19x19": {
+      "rating": 935.680271228339,
+      "deviation": 76.73292315462554,
+      "volatility": 0.05999507580837069
+    },
+    "overall": {
+      "rating": 1034.5959712496717,
+      "deviation": 64.00616988885005,
+      "volatility": 0.060009815736724426
+    },
+    "version": 5,
+    "live-9x9": {
+      "rating": 950.3517070640278,
+      "deviation": 187.948049255617,
+      "volatility": 0.06000864262719635
+    },
+    "live-19x19": {
+      "rating": 963.3610311666696,
+      "deviation": 89.90896054825346,
+      "volatility": 0.060005467324040676
+    },
+    "correspondence": {
+      "rating": 1050.951386220326,
+      "deviation": 71.59859463539328,
+      "volatility": 0.05998010808977351
+    },
+    "correspondence-9x9": {
+      "rating": 1220.6788081783936,
+      "deviation": 93.35712329101707,
+      "volatility": 0.05998749787628766
+    },
+    "correspondence-13x13": {
+      "rating": 935.4020899382218,
+      "deviation": 133.80303670740366,
+      "volatility": 0.060001353921150344
+    },
+    "correspondence-19x19": {
+      "rating": 891.3213713900075,
+      "deviation": 123.96817298398967,
+      "volatility": 0.05999757334070211
+    }
+  },
+  "ranking": 15.704219222059184,
+  "about": "<a rel='me' href='https: //firefish.social/@bonealisa'></a>\n\nI run the [Dayton Ohio Go Club](https://daytongo.club)!\n\nJust tryna have some fun learning the game! ",
+  "settings": "/api/v1/mesettings",
+  "account_settings": "/api/v1/meaccount_settings",
+  "friends": "/api/v1/mefriends",
+  "games": "/api/v1/megames",
+  "challenges": "/api/v1/mechallenges",
+  "groups": "/api/v1/megroups",
+  "mail": "/api/v1/memail",
+  "tournaments": "/api/v1/metournaments",
+  "vacation": "/api/v1/mevacation",
+  "notifications": "/api/v1/menotifications"
+}

@@ -1,0 +1,17 @@
+{
+  "id": 1010740,
+  "username": "Bone-A Lisa",
+  "country": "us",
+  "icon": "https://b0c2ddc39d13e1c0ddad-93a52a5bc9e7cc06050c1a999beb3694.ssl.cf1.rackcdn.com/4dac13f25255d0a4719b8c7900ff889f-32.png",
+  "ratings": {
+    "version": 5,
+    "overall": {
+      "rating": 1034.5959712496717,
+      "deviation": 64.00616988885005,
+      "volatility": 0.060009815736724426
+    }
+  },
+  "ranking": 15.704219222059184,
+  "professional": false,
+  "ui_class": "supporter"
+}
