@@ -17,6 +17,7 @@ import logging
 from loguru import logger
 from typing import Callable, Any
 from .ogscredentials import OGSCredentials
+from .ogsplayer import OGSPlayer
 from .ogssocket import OGSSocket
 from .ogsrestapi import OGSRestAPI
 from .ogs_api_exception import OGSApiException
@@ -257,20 +258,22 @@ class OGSClient:
 
     # Players: /players
 
-    def get_player(self, player_username: str) -> dict:
+    def get_player(self, player_username: str) -> OGSPlayer:
         """Get a player by username.
         
         Args:
             player_username (str): Username of the player to get.
         
         Returns:
-            player_data (dict): Player data returned from the endpoint
+            player_data (OGSPlayer): Player data returned from the endpoint
         """
 
         endpoint = '/players/'
         logger.info(f"Getting player {player_username}")
-        return self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
-    
+        player_data = self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : player_username}).json()['results'][0]
+
+        return OGSPlayer(**player_data)
+
     def get_player_games(self, player_username: str) -> dict:
         """Get a player's games by username.
         
