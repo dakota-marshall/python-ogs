@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `OGSPlayer` dataclass to hold player data
+
+### Changed
+
+- Updated `get_player` method to return `OGSPlayer` dataclass instead of a raw dict
+- Updated `get_player` to accept a username or user id
+
 ## [1.3.0] - 2023-08-30
 
 ### Added
