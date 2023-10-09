@@ -45,7 +45,7 @@ class OGSRestAPI:
             logger.debug("Connecting to production OGS instance")
 
         # TODO: Maybe implement some form of token caching
-        if self.credentials.access_token is not None and self.credentials.refresh_token is not None:
+        if self.credentials.client_id is not None and self.credentials.client_secret is not None:
             self.authenticate()
             self.get_auth_data()
 
