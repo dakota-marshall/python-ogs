@@ -87,13 +87,12 @@ class OGSClient:
     def __init__(self, client_id: str | None = None, client_secret: str | None = None, 
                  username: str | None = None, password: str | None = None, dev: bool = False):
 
-        self.credentials: OGSCredentials | None = None
-
         # Only authenticate if all credentials are provided
         if client_id is not None and client_secret is not None and username is not None and password is not None:
             self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                               username=username, password=password)
         else:
+            self.credentials = OGSCredentials()
             logger.warning("Not all credentials provided, not authenticating. You will not be able to access any user specific resources.")
 
         self.api = OGSRestAPI(self.credentials,dev=dev)

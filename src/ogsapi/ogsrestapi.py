@@ -32,7 +32,7 @@ class OGSRestAPI:
         base_url (str): The base URL to use for API calls
     """
 
-    def __init__(self, credentials: OGSCredentials | None = None, dev: bool = False):
+    def __init__(self, credentials: OGSCredentials, dev: bool = False):
 
         self.credentials = credentials
         self.is_authed = False
@@ -45,7 +45,7 @@ class OGSRestAPI:
             logger.debug("Connecting to production OGS instance")
 
         # TODO: Maybe implement some form of token caching
-        if self.credentials is not None:
+        if self.credentials.access_token is not None and self.credentials.refresh_token is not None:
             self.authenticate()
             self.get_auth_data()
 

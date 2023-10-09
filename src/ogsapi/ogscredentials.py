@@ -19,10 +19,10 @@ class OGSCredentials:
     """OGS REST API Credentials dataclass
     
     Attributes:
-        client_id (str): OGS Client ID
-        client_secret (str): OGS Client Secret
-        username (str): Case sensitive OGS Username
-        password (str): OGS Password
+        client_id (str, optional): OGS Client ID
+        client_secret (str, optional): OGS Client Secret
+        username (str, optional): Case sensitive OGS Username
+        password (str, optional): OGS Password
         access_token (str, optional): Access token to use for authentication. Defaults to None.
         refresh_token (str, optional): The refresh token to use for authentication. Defaults to None.
         user_id (str, optional): The user ID to use for authentication. Defaults to None.
@@ -30,10 +30,10 @@ class OGSCredentials:
         user_jwt (str, optional): The user JWT to use for authentication. Defaults to None.
         notification_auth (str, optional): The notification auth token to use for authentication. Defaults to None.
     """
-    client_id: str
-    client_secret: str
-    username: str
-    password: str
+    client_id: str | None = None
+    client_secret: str | None = None
+    username: str | None = None
+    password: str | None = None
     access_token: str | None = None
     refresh_token: str | None = None
     user_id: str | None = None
