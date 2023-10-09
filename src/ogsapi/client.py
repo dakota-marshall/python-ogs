@@ -84,7 +84,7 @@ class OGSClient:
         sock (OGSSocket): SocketIO connection to OGS
 
     """
-    def __init__(self, client_id, client_secret, username, password, dev: bool = False):
+    def __init__(self, client_id: str, client_secret: str, username: str, password: str, dev: bool = False):
 
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
