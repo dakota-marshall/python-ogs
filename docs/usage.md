@@ -25,7 +25,13 @@ from ogsapi.client import OGSClient
 
 ogs = OGSClient('your_client_id', 'your_client_secret', 'your_username', 'your_password')
 ```
-If you want debug logs, you can pass `log_level='DEBUG'` to the constructor. This will authenticate you to OGS using your API credentials, but does not connect to the Realtime API.
+If you want debug logs, you can pass `log_level='DEBUG'` to the constructor. This will authenticate you to OGS using your API credentials, but does not connect to the Realtime API. You can also pass no credentials, and you will be able to use the API as an anonymous user, only able to call unauthenticated endpoints.
+
+To set your credentials after instantiation, you can use the [set_credentials()](/api/#src.ogsapi.client.OGSClient.set_credentials) method:
+
+```python
+ogs.set_credentials('your_client_id', 'your_client_secret', 'your_username', 'your_password')
+```
 
 From here, you should be able to call of the REST API related methods.
 
