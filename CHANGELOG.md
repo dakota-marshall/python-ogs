@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Typehints to OGSClient args
+- Ability to make calls to unauthenticated endpoints without a token
+- Added `set_credentials()` method to `OGSClient` to allow for setting credentials after instantiation
+- Methods requiring a token now check if the client is authenticated by calling `authed_endpoint()`
+
 ## [1.3.0] - 2023-08-30
 
 ### Added
