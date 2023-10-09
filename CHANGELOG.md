@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Typehints to OGSClient args
 - Added `OGSPlayer` dataclass to hold player data
+- Ability to make calls to unauthenticated endpoints without a token
+- Added `set_credentials()` method to `OGSClient` to allow for setting credentials after instantiation
+- Methods requiring a token now check if the client is authenticated by calling `authed_endpoint()`
 
 ### Changed
 

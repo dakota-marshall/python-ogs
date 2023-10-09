@@ -85,12 +85,52 @@ class OGSClient:
         sock (OGSSocket): SocketIO connection to OGS
 
     """
-    def __init__(self, client_id, client_secret, username, password, dev: bool = False):
+    def __init__(self, client_id: str | None = None, client_secret: str | None = None, 
+                 username: str | None = None, password: str | None = None, dev: bool = False):
 
+        # Only authenticate if all credentials are provided
+        if client_id is not None and client_secret is not None and username is not None and password is not None:
+            self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
+                                              username=username, password=password)
+        else:
+            self.credentials = OGSCredentials()
+            logger.warning("Not all credentials provided, not authenticating. You will not be able to access any user specific resources.")
+
+        self.api = OGSRestAPI(self.credentials,dev=dev)
+        if self.is_authed():
+            self.credentials.user_id = self.user_vitals()['id']
+
+    def is_authed(self) -> bool:
+        """Check if the user is authenticated to the REST API.
+        
+        Returns:
+            is_authed (bool): Whether or not the user is authenticated
+        """
+        return getattr(self.api, 'is_authed')
+
+    def authed_endpoint(self) -> None:
+        """Check function to block access to endpoints that require authentication.
+        
+        Raises:
+            OGSApiException: If the user is not authenticated
+        """
+        if not self.is_authed():
+            logger.error("User is not authenticated, cannot call this method.")
+            raise OGSApiException("User is not authenticated, cannot call this method.")
+
+    def set_credentials(self, client_id: str, client_secret: str, username: str, password: str) -> None:
+        """Set the credentials for the client after instantiation.
+        
+        Args:
+            client_id (str): Client ID from OGS
+            client_secret (str): Client Secret from OGS
+            username (str): Username of OGS account
+            password (str): Password of OGS account
+        """
         self.credentials = OGSCredentials(client_id=client_id, client_secret=client_secret,
                                           username=username, password=password)
-        self.api = OGSRestAPI(self.credentials,dev=dev)
-        self.credentials.user_id = self.user_vitals()['id']
+        self.api.credentials = self.credentials
+        self.api.authenticate()
 
     def enable_logging(self) -> None:
         """Enable logging from ogsapi"""
@@ -103,22 +143,25 @@ class OGSClient:
     # User Specific Resources: /me
 
     def user_vitals(self) -> dict:
-        """Get the user's vitals.
+        """Get the user's vitals. Authed only.
         
         Returns:
             response (dict): JSON response from the endpoint
         """
+
+        self.authed_endpoint()
 
         endpoint = '/me'
         logger.info("Getting user vitals")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()
 
     def user_settings(self) -> dict:
-        """Get the user's settings.
+        """Get the user's settings. Authed only.
         
         Returns:
             response (dict): JSON response from the endpoint
         """
+        self.authed_endpoint()
 
         endpoint = '/me/settings/'
         logger.info("Getting user settings")
@@ -133,7 +176,7 @@ class OGSClient:
             website: str | None = None,
             about: str | None = None
         ) -> dict:
-        """Update the user's settings.
+        """Update the user's settings. Authed only.
         
         Args:
             username (str, optional): New username. Defaults to None.
@@ -147,6 +190,8 @@ class OGSClient:
         Returns:
             response (dict): JSON response from the endpoint
         """
+
+        self.authed_endpoint()
 
         # This is a bit of a mess, but it works, should be refactored
         payload: dict[str, Any] = {}
@@ -181,15 +226,18 @@ class OGSClient:
             response (list[dict]): JSON object containing players active games.
         """
 
-        if player_id is None:
+        if player_id is None and self.is_authed():
             endpoint = "/ui/overview"
+        elif player_id is None and not self.is_authed():
+            logger.warning("Not authenticated and no player ID provided, returning empty list")
+            return []
         else:
             endpoint = f"/players/{player_id}/full"
         return self.api.call_rest_endpoint('GET', endpoint=endpoint).json()["active_games"]
 
 
     def user_games(self, page: int = 1, page_size: int = 10) -> dict:
-        """Get the user's games.
+        """Get the user's games. Authed only.
 
         Args:
             page (int): Page number of user games. Defaults to page 1
@@ -199,6 +247,8 @@ class OGSClient:
             response (dict): JSON response from the endpoint
         """
 
+        self.authed_endpoint()
+
         endpoint = '/me/games'
         params = { 'page': page, 'page_size': page_size }
         logger.info(f"Getting user games - page {page} with page size {page_size}")
@@ -206,7 +256,7 @@ class OGSClient:
 
 
     def user_friends(self, username: str | None = None) -> dict:
-        """Get the user's friends.
+        """Get the user's friends. Authed only.
         
         Args:
             username (str, optional): Username of the user to get friends of. Defaults to None.
@@ -215,12 +265,14 @@ class OGSClient:
             response (dict): JSON response from the endpoint
         """
 
+        self.authed_endpoint()
+
         endpoint = '/me/friends'
         logger.info("Getting user friends")
         return self.api.call_rest_endpoint('GET', endpoint=endpoint, params={'username' : username}).json()
 
     def send_friend_request(self, username: str) -> dict:
-        """Send a friend request to a user.
+        """Send a friend request to a user. Authed only.
         
         Args:
             username (str): Username of the user to send a friend request to.
@@ -228,6 +280,8 @@ class OGSClient:
         Returns:
             response (dict): JSON response from the endpoint
         """
+
+        self.authed_endpoint()
 
         endpoint = '/me/friends'
         player_id = self.get_player(username)['id']
@@ -238,7 +292,7 @@ class OGSClient:
         return self.api.call_rest_endpoint('POST', endpoint=endpoint, payload=payload).json()
 
     def remove_friend(self, username: str) -> dict:
-        """Remove a friend.
+        """Remove a friend. Authed only.
         
         Args:
             username (str): Username of the user to remove as a friend.
@@ -246,6 +300,8 @@ class OGSClient:
         Returns:
             response (dict): JSON response from the endpoint
         """
+
+        self.authed_endpoint()
 
         endpoint = '/me/friends/'
         player_id = self.get_player(username)['id']
@@ -305,7 +361,7 @@ class OGSClient:
 
     # TODO: This needs to be using a dataclass to make challenge customization easier
     def create_challenge(self, player_username: str | None = None, **game_settings) -> tuple[int, int]:
-        """Create either an open challenge or a challenge to a specific player.
+        """Create either an open challenge or a challenge to a specific player. Authed only.
         The time control settings are built depending on which time control is used.
         Make sure that you pass the correct time control settings for the time control you want to use.
         The other time control settings will be ignored.
@@ -359,6 +415,9 @@ class OGSClient:
             challenge_id (int): ID of the challenge created
             game_id (int): ID of the game created
         """
+
+        self.authed_endpoint()
+
         time_control = game_settings.get('time_control', 'byoyomi')
         # Set common parameters
         time_control_parameters = {}
@@ -450,11 +509,13 @@ class OGSClient:
 
     # TODO: Change these to use the 'challenger' parameter instead of looping through all challenges
     def received_challenges(self) -> list[dict]:
-        """Get all received challenges.
+        """Get all received challenges. Authed only.
         
         Returns:
             challenges (list[dict]): JSON response from the endpoint
         """
+
+        self.authed_endpoint()
 
         endpoint = '/me/challenges/'
         received_challenges = []
@@ -468,11 +529,14 @@ class OGSClient:
 
     # TODO: Same as above
     def sent_challenges(self) -> list[dict]:
-        """Get all sent challenges.
+        """Get all sent challenges. Authed only.
         
         Returns:
             challenges (list[dict]): JSON response from the endpoint
         """
+
+        self.authed_endpoint()
+
         endpoint = '/me/challenges'
         sent_challenges = []
         logger.info("Getting sent challenges")
@@ -484,7 +548,7 @@ class OGSClient:
         return sent_challenges
 
     def accept_challenge(self, challenge_id: str) -> dict:
-        """Accept a challenge.
+        """Accept a challenge. Authed only.
         
         Args:
             challenge_id (str): ID of the challenge to accept.
@@ -493,12 +557,14 @@ class OGSClient:
             response (dict): JSON response from the endpoint
         """
 
+        self.authed_endpoint()
+
         endpoint = f'/me/challenges/{challenge_id}/accept'
         logger.info(f"Accepting challenge {challenge_id}")
         return self.api.call_rest_endpoint('POST', endpoint=endpoint,payload={}).json()
     
     def decline_challenge(self, challenge_id: str) -> dict:
-        """Decline a challenge.
+        """Decline a challenge. Authed only.
         
         Args:
             challenge_id (str): ID of the challenge to decline.
@@ -507,12 +573,14 @@ class OGSClient:
             response (dict): JSON response from the endpoint
         """
 
+        self.authed_endpoint()
+
         endpoint = f'/me/challenges/{challenge_id}/'
         logger.info(f"Declining challenge {challenge_id}")
         return self.api.call_rest_endpoint('DELETE', endpoint=endpoint, payload={}).json()
 
     def challenge_details(self, challenge_id: str) -> dict:
-        """Get details of a challenge.
+        """Get details of a challenge. Authed only.
         
         Args:
             challenge_id (str): ID of the challenge to get details of.
@@ -520,6 +588,8 @@ class OGSClient:
         Returns:
             response (dict): JSON response from the endpoint
         """
+
+        self.authed_endpoint()
 
         endpoint = f'/me/challenges/{challenge_id}'
         logger.info(f"Getting challenge details for {challenge_id}")
@@ -578,11 +648,14 @@ class OGSClient:
         return self.api.call_rest_endpoint('GET', endpoint).text
 
     def socket_connect(self, callback_handler: Callable) -> None:
-        """Connect to the socket.
+        """Connect to the socket. Need credentials to be able to connect.
         
         Args:
             callback_handler (Callable): Callback function to send socket events to.
         """
+
+        self.authed_endpoint()
+
         self.sock = OGSSocket(self.credentials)
         self.sock.callback_handler = callback_handler
         self.sock.connect()
