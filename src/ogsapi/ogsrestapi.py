@@ -26,14 +26,16 @@ class OGSRestAPI:
         dev (bool, optional): Whether to connect to beta OGS instance. Defaults to False.
     
     Attributes:
-        credentials (OGSCredentials): The credentials used for authentication
+        credentials (OGSCredentials, optional): The credentials used for authentication
+        is_authed (bool): Whether the user is authenticated
         api_ver (str): The API version to use
         base_url (str): The base URL to use for API calls
     """
 
-    def __init__(self, credentials: OGSCredentials, dev: bool = False):
+    def __init__(self, credentials: OGSCredentials | None = None, dev: bool = False):
 
         self.credentials = credentials
+        self.is_authed = False
         self.api_ver = "v1"
         if dev:
             self.base_url = 'https://beta.online-go.com/'
@@ -43,8 +45,9 @@ class OGSRestAPI:
             logger.debug("Connecting to production OGS instance")
 
         # TODO: Maybe implement some form of token caching
-        self.authenticate()
-        self.get_auth_data()
+        if self.credentials is not None:
+            self.authenticate()
+            self.get_auth_data()
 
     # TODO: All these internal functions should be moved into private functions
     @logger.catch
@@ -71,6 +74,8 @@ class OGSRestAPI:
             # TODO: This should probably be made into a user object that has token and ID info
             self.credentials.access_token = response.json()['access_token']
             self.credentials.refresh_token = response.json()['refresh_token']
+            self.get_auth_data()
+            self.is_authed = True
         else:
             raise OGSApiException(f"{response.status_code}: {response.reason}")
 
@@ -89,10 +94,16 @@ class OGSRestAPI:
         """
         method = method.upper()
         url = f'{self.base_url}api/{self.api_ver}{endpoint}'
-        headers = {
-            'Authorization' : f'Bearer {self.credentials.access_token}',
-            'Content-Type': 'application/json'
-        }
+        
+        if self.is_authed:
+            headers = {
+                'Authorization' : f'Bearer {self.credentials.access_token}',
+                'Content-Type': 'application/json'
+            }
+        else:
+            headers = {
+                'Content-Type': 'application/json'
+            }
 
         # Bail if method is invalid
         if method not in ['GET', 'POST', 'PUT', 'DELETE']:
